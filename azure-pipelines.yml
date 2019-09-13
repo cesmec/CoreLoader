@@ -6,7 +6,8 @@ pool:
 
 variables:
   version.majorminor: 0.1
-  version: $(version.majorminor).$[counter(variables['version.majorminor'], 0)]-pre
+  version.revision: $[counter(variables['version.majorminor'], 0)]
+  version: $(version.majorminor).$(version.revision)-pre
 
 steps:
 - task: DotNetCoreCLI@2
