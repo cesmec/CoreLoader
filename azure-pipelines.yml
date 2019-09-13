@@ -1,0 +1,18 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  version.majorminor: 0.1
+  version.revision: $[counter(variables['version.majorminor'], 0)]
+  version: $(version.majorminor).$(version.revision)-pre
+
+steps:
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'pack'
+    packagesToPack: '*/*.csproj'
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: 'version'
