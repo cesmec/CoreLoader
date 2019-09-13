@@ -5,16 +5,16 @@ namespace CoreLoader.OpenGL.Windows
 {
     internal sealed class WindowsNativeHelper : INativeHelper
     {
-        private IntPtr _openGlLibrary;
+        private readonly IntPtr _openGlLibrary;
+
+        public WindowsNativeHelper()
+        {
+            _openGlLibrary = Kernel32.LoadLibraryA("opengl32.dll");
+        }
 
         public IWindow CreateWindow(string title, int width, int height)
         {
             return new Win32OpenGLWindow(title, width, height);
-        }
-
-        public void Init()
-        {
-            _openGlLibrary = Kernel32.LoadLibraryA("opengl32.dll");
         }
 
         public IntPtr GetFunctionPtr(string functionName)

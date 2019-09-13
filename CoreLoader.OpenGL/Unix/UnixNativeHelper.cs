@@ -9,9 +9,6 @@ namespace CoreLoader.OpenGL.Unix
             return new X11OpenGLWindow(title, width, height);
         }
 
-        public void Init()
-        { }
-
         public IntPtr GetFunctionPtr(string functionName)
         {
             var address = OpenGl.GlXGetProcAddress(functionName);
