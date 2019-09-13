@@ -5,7 +5,8 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  buildConfiguration: 'Release'
+  version.majorminor: 0.1
+  version: $(version.majorminor).$[counter(variables['version.majorminor'], 0)]-pre
 
 steps:
 - task: DotNetCoreCLI@2
