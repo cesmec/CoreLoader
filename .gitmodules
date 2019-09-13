@@ -1,0 +1,3 @@
+[submodule "Generators/CoreLoader.Generator.OpenGL/OpenGL-Refpages"]
+	path = Generators/CoreLoader.Generator.OpenGL/OpenGL-Refpages
+	url = https://github.com/KhronosGroup/OpenGL-Refpages
