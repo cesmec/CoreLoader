@@ -122,6 +122,14 @@ namespace CoreLoader.Unix.Native
             public ulong cursor;		/* cursor to be displayed (or None) */
         }
 
+        public struct XColor
+        {
+            public ulong pixel;
+            public ushort red, green, blue;
+            public byte flags;  /* do_red, do_green, do_blue */
+            public byte pad;
+        }
+
         private const string LibName = "libX11";
 
         [DllImport(LibName, ExactSpelling = true)]
@@ -142,6 +150,36 @@ namespace CoreLoader.Unix.Native
         public static extern ulong XInternAtom(IntPtr display, string atomName, bool onlyIfExists);
         [DllImport(LibName, ExactSpelling = true)]
         public static extern int XSetWMProtocols(IntPtr display, ulong window, ulong[] protocols, int count);
+
+        //keys
+        [DllImport(LibName, ExactSpelling = true)]
+        public static extern uint XKeysymToKeycode(IntPtr display, uint keysym);
+        [DllImport(LibName, ExactSpelling = true)]
+        public static extern uint XKeycodeToKeysym(IntPtr display, uint keycode, int index);
+        [DllImport(LibName, ExactSpelling = true)]
+        public static extern void XQueryKeymap(IntPtr display, byte[] keys_return);
+        [DllImport(LibName, ExactSpelling = true)]
+        public static extern string XKeysymToString(uint keysym);
+        [DllImport(LibName, ExactSpelling = true)]
+        public static extern uint XStringToKeysym(string name);
+
+        //pointer
+        [DllImport(LibName, ExactSpelling = true)]
+        public static extern bool XQueryPointer(IntPtr display, ulong w, out ulong root_return, out ulong child_return, out int root_x_return, out int root_y_return, out int win_x_return, out int win_y_return, out uint mask_return);
+        [DllImport(LibName, ExactSpelling = true)]
+        public static extern void XWarpPointer(IntPtr display, ulong src_w, ulong dest_w, int src_x, int src_y, uint src_width, uint src_height, int dest_x, int dest_y);
+        [DllImport(LibName, ExactSpelling = true)]
+        public static extern uint XCreateBitmapFromData(IntPtr display, ulong window, byte[] data, uint width, uint height);
+        [DllImport(LibName, ExactSpelling = true)]
+        public static extern uint XCreatePixmapCursor(IntPtr display, uint bitmap, uint bitmap_mask, ref XColor foreground, ref XColor background, uint x, uint y);
+        [DllImport(LibName, ExactSpelling = true)]
+        public static extern void XDefineCursor(IntPtr display, uint window, uint cursor);
+        [DllImport(LibName, ExactSpelling = true)]
+        public static extern void XFreeCursor(IntPtr display, uint cursor);
+        [DllImport(LibName, ExactSpelling = true)]
+        public static extern void XFreePixmap(IntPtr display, uint pixmap);
+        [DllImport(LibName, ExactSpelling = true)]
+        public static extern void XUndefineCursor(IntPtr display, ulong window);
 
         //event handling
         [DllImport(LibName, ExactSpelling = true)]

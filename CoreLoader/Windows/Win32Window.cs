@@ -12,6 +12,7 @@ namespace CoreLoader.Windows
         private readonly ManualResetEvent _loadedEvent = new ManualResetEvent(false);
 
         public bool CloseRequested { get; private set; }
+        public IKeyCodes KeyCodes { get; } = new Win32KeyCodes();
 
         public event EventHandler<KeyEventArgs> OnKeyDown;
         public event EventHandler<KeyEventArgs> OnKeyUp;
@@ -42,9 +43,9 @@ namespace CoreLoader.Windows
             _loadedEvent.Dispose();
         }
 
-        public KeyState GetKeyState(int key)
+        public KeyState GetKeyState(uint key)
         {
-            var state = User32.GetAsyncKeyState(key);
+            var state = User32.GetAsyncKeyState((int)key);
             switch (state)
             {
                 case -32767: //todo check values

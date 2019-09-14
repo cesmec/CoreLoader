@@ -6,6 +6,7 @@ namespace CoreLoader
     public interface IWindow
     {
         bool CloseRequested { get; }
+        IKeyCodes KeyCodes { get; }
 
         event EventHandler<KeyEventArgs> OnKeyDown;
         event EventHandler<KeyEventArgs> OnKeyUp;
@@ -15,7 +16,7 @@ namespace CoreLoader
         event EventHandler<ResizeEventArgs> OnResize;
         event EventHandler<FocusChangeEventArgs> OnFocusChange;
 
-        KeyState GetKeyState(int key);
+        KeyState GetKeyState(uint key);
         bool GetCursorPosition(out Point position);
         void SetCursorPosition(in Point position);
         void SetCursorVisible(bool visible);
