@@ -57,7 +57,7 @@ namespace CoreLoader.Unix.Native
             public IntPtr xdefaults;	/* contents of defaults from server */
             /* there is more to this structure, but it is private to Xlib */
         }
-
+        
         public struct Screen
         {
             public IntPtr ext_data;	/* hook for extension to hang data */
@@ -153,15 +153,13 @@ namespace CoreLoader.Unix.Native
 
         //keys
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern uint XKeysymToKeycode(IntPtr display, uint keysym);
-        [DllImport(LibName, ExactSpelling = true)]
-        public static extern uint XKeycodeToKeysym(IntPtr display, uint keycode, int index);
+        public static extern uint XkbKeycodeToKeysym(IntPtr display, uint keycode, int group, int level);
         [DllImport(LibName, ExactSpelling = true)]
         public static extern void XQueryKeymap(IntPtr display, byte[] keys_return);
         [DllImport(LibName, ExactSpelling = true)]
         public static extern string XKeysymToString(uint keysym);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern uint XStringToKeysym(string name);
+        public static extern uint XKeysymToKeycode(IntPtr display, uint keysym);
 
         //pointer
         [DllImport(LibName, ExactSpelling = true)]

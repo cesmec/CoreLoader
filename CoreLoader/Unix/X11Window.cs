@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Runtime.InteropServices;
 using CoreLoader.Events;
 using CoreLoader.Unix.Native;
@@ -14,7 +13,7 @@ namespace CoreLoader.Unix
         private readonly byte[] _keys = new byte[32];
 
         public bool CloseRequested { get; private set; }
-        public IKeyCodes KeyCodes { get; }
+        public IKeys Keys { get; }
 
         public event EventHandler<KeyEventArgs> OnKeyDown;
         public event EventHandler<KeyEventArgs> OnKeyUp;
@@ -27,7 +26,7 @@ namespace CoreLoader.Unix
         protected X11Window(string title, int width, int height)
         {
             DisplayPtr = X11.XOpenDisplay(null);
-            KeyCodes = new UnixKeyCodes(DisplayPtr);
+            Keys = new UnixKeys(DisplayPtr);
             var display = Marshal.PtrToStructure<X11.XDisplay>(DisplayPtr);
             var screen = Marshal.PtrToStructure<X11.Screen>(display.screens + display.default_screen);
 

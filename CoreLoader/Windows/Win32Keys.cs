@@ -1,0 +1,134 @@
+using System.Text;
+using CoreLoader.Windows.Native;
+
+namespace CoreLoader.Windows
+{
+    public sealed class Win32Keys : IKeys
+    {
+        public string GetKeyName(uint key)
+        {
+            var stringBuilder = new StringBuilder(32);
+            var length = User32.GetKeyNameTextA(key, stringBuilder, stringBuilder.Capacity);
+
+            return stringBuilder.ToString(0, length);
+        }
+
+        public uint Back => 0x08;
+        public uint Tab => 0x09;
+        public uint Return => 0x0D;
+        public uint Shift => 0x10;
+        public uint Control => 0x11;
+        public uint Menu => 0x12;
+        public uint Pause => 0x13;
+        public uint Capital => 0x14;
+        public uint Escape => 0x1B;
+        public uint Space => 0x20;
+        public uint PageUp => 0x21;
+        public uint PageDown => 0x22;
+        public uint End => 0x23;
+        public uint Home => 0x24;
+        public uint Left => 0x25;
+        public uint Up => 0x26;
+        public uint Right => 0x27;
+        public uint Down => 0x28;
+        public uint Insert => 0x2D;
+        public uint Delete => 0x2E;
+        public uint Help => 0x2F;
+        public uint Key0 => 0x30;
+        public uint Key1 => 0x31;
+        public uint Key2 => 0x32;
+        public uint Key3 => 0x33;
+        public uint Key4 => 0x34;
+        public uint Key5 => 0x35;
+        public uint Key6 => 0x36;
+        public uint Key7 => 0x37;
+        public uint Key8 => 0x38;
+        public uint Key9 => 0x39;
+        public uint A => 0x41;
+        public uint B => 0x42;
+        public uint C => 0x43;
+        public uint D => 0x44;
+        public uint E => 0x45;
+        public uint F => 0x46;
+        public uint G => 0x47;
+        public uint H => 0x48;
+        public uint I => 0x49;
+        public uint J => 0x4A;
+        public uint K => 0x4B;
+        public uint L => 0x4C;
+        public uint M => 0x4D;
+        public uint N => 0x4E;
+        public uint O => 0x4F;
+        public uint P => 0x50;
+        public uint Q => 0x51;
+        public uint R => 0x52;
+        public uint S => 0x53;
+        public uint T => 0x54;
+        public uint U => 0x55;
+        public uint V => 0x56;
+        public uint W => 0x57;
+        public uint X => 0x58;
+        public uint Y => 0x59;
+        public uint Z => 0x5A;
+        public uint Lwin => 0x5B;
+        public uint Rwin => 0x5C;
+        public uint Numpad0 => 0x60;
+        public uint Numpad1 => 0x61;
+        public uint Numpad2 => 0x62;
+        public uint Numpad3 => 0x63;
+        public uint Numpad4 => 0x64;
+        public uint Numpad5 => 0x65;
+        public uint Numpad6 => 0x66;
+        public uint Numpad7 => 0x67;
+        public uint Numpad8 => 0x68;
+        public uint Numpad9 => 0x69;
+        public uint Multiply => 0x6A;
+        public uint Add => 0x6B;
+        public uint Separator => 0x6C;
+        public uint Subtract => 0x6D;
+        public uint Decimal => 0x6E;
+        public uint Divide => 0x6F;
+        public uint F1 => 0x70;
+        public uint F2 => 0x71;
+        public uint F3 => 0x72;
+        public uint F4 => 0x73;
+        public uint F5 => 0x74;
+        public uint F6 => 0x75;
+        public uint F7 => 0x76;
+        public uint F8 => 0x77;
+        public uint F9 => 0x78;
+        public uint F10 => 0x79;
+        public uint F11 => 0x7A;
+        public uint F12 => 0x7B;
+        public uint F13 => 0x7C;
+        public uint F14 => 0x7D;
+        public uint F15 => 0x7E;
+        public uint F16 => 0x7F;
+        public uint F17 => 0x80;
+        public uint F18 => 0x81;
+        public uint F19 => 0x82;
+        public uint F20 => 0x83;
+        public uint F21 => 0x84;
+        public uint F22 => 0x85;
+        public uint F23 => 0x86;
+        public uint F24 => 0x87;
+        public uint Lshift => 0xA0;
+        public uint Rshift => 0xA1;
+        public uint Lcontrol => 0xA2;
+        public uint Rcontrol => 0xA3;
+        public uint Lmenu => 0xA4;
+        public uint Rmenu => 0xA5;
+        public uint OemPlus => 0xBB;
+        public uint OemComma => 0xBC;
+        public uint OemMinus => 0xBD;
+        public uint OemPeriod => 0xBE;
+        public uint Oem1 => 0xBA;
+        public uint Oem2 => 0xBF;
+        public uint Oem3 => 0xC0;
+        public uint Oem4 => 0xDB;
+        public uint Oem5 => 0xDC;
+        public uint Oem6 => 0xDD;
+        public uint Oem7 => 0xDE;
+        public uint Oem8 => 0xDF;
+    }
+}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace CoreLoader.Windows.Native
 {
@@ -79,8 +80,8 @@ namespace CoreLoader.Windows.Native
         public static extern IntPtr GetDC(IntPtr hWnd);
         [DllImport(nameof(User32), ExactSpelling = true)]
         public static extern void SetWindowTextA(IntPtr hWnd, [MarshalAs(UnmanagedType.LPStr)] string title);
-        [DllImport(nameof(User32), ExactSpelling = true)]
-        public static extern short GetAsyncKeyState(int key);
+
+        //cursor
         [DllImport(nameof(User32), ExactSpelling = true)]
         public static extern bool GetCursorPos(out Point position);
         [DllImport(nameof(User32), ExactSpelling = true)]
@@ -89,5 +90,11 @@ namespace CoreLoader.Windows.Native
         public static extern bool GetWindowInfo(IntPtr hWnd, out WindowInfo windowInfo);
         [DllImport(nameof(User32), ExactSpelling = true)]
         public static extern int ShowCursor(bool show);
+
+        //keyboard
+        [DllImport(nameof(User32), ExactSpelling = true)]
+        public static extern short GetAsyncKeyState(int key);
+        [DllImport(nameof(User32), ExactSpelling = true)]
+        public static extern int GetKeyNameTextA(long lParam, [MarshalAs(UnmanagedType.LPStr)]StringBuilder lpString, int cchSize);
     }
 }

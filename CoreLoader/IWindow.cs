@@ -6,7 +6,7 @@ namespace CoreLoader
     public interface IWindow
     {
         bool CloseRequested { get; }
-        IKeyCodes KeyCodes { get; }
+        IKeys Keys { get; }
 
         event EventHandler<KeyEventArgs> OnKeyDown;
         event EventHandler<KeyEventArgs> OnKeyUp;

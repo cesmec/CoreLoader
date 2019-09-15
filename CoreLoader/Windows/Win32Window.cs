@@ -12,7 +12,7 @@ namespace CoreLoader.Windows
         private readonly ManualResetEvent _loadedEvent = new ManualResetEvent(false);
 
         public bool CloseRequested { get; private set; }
-        public IKeyCodes KeyCodes { get; } = new Win32KeyCodes();
+        public IKeys Keys { get; } = new Win32Keys();
 
         public event EventHandler<KeyEventArgs> OnKeyDown;
         public event EventHandler<KeyEventArgs> OnKeyUp;
