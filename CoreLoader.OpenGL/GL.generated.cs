@@ -613,12 +613,6 @@ namespace CoreLoader.OpenGL
         }
         
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void CreateRenderbuffers(int n, uint* renderbuffers)
-        {
-            GlNative.CreateRenderbuffers(n, renderbuffers);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static void CreateSamplers(int n, uint* samplers)
         {
             GlNative.CreateSamplers(n, samplers);
@@ -682,12 +676,6 @@ namespace CoreLoader.OpenGL
         public static void DeleteQueries(int n, uint* ids)
         {
             GlNative.DeleteQueries(n, ids);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void DeleteRenderbuffers(int n, uint* renderbuffers)
-        {
-            GlNative.DeleteRenderbuffers(n, renderbuffers);
         }
         
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]

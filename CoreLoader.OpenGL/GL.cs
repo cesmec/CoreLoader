@@ -74,6 +74,23 @@ namespace CoreLoader.OpenGL
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint CreateRenderbuffer()
+        {
+            uint renderbuffer;
+            GlNative.CreateRenderbuffers(1, &renderbuffer);
+            return renderbuffer;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint[] CreateRenderbuffers(int count)
+        {
+            var renderbuffers = new uint[count];
+            fixed (uint* firstRenderbuffer = renderbuffers)
+                GlNative.CreateRenderbuffers(count, firstRenderbuffer);
+            return renderbuffers;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DeleteVertexArray(uint vao)
         {
             GlNative.DeleteVertexArrays(1, &vao);
@@ -113,20 +130,29 @@ namespace CoreLoader.OpenGL
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static uint DeleteFramebuffer()
+        public static void DeleteFramebuffer(uint framebuffer)
         {
-            uint framebuffer;
             GlNative.DeleteFramebuffers(1, &framebuffer);
-            return framebuffer;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static uint[] DeleteFramebuffers(int count)
+        public static void DeleteFramebuffers(uint[] framebuffers)
         {
-            var framebuffers = new uint[count];
             fixed (uint* firstFramebuffer = framebuffers)
-                GlNative.DeleteBuffers(count, firstFramebuffer);
-            return framebuffers;
+                GlNative.DeleteBuffers(framebuffers.Length, firstFramebuffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DeleteRenderbuffer(uint renderbuffer)
+        {
+            GlNative.DeleteRenderbuffers(1, &renderbuffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DeleteRenderbuffers(uint[] renderbuffers)
+        {
+            fixed (uint* firstRenderbuffer = renderbuffers)
+                GlNative.DeleteRenderbuffers(renderbuffers.Length, firstRenderbuffer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
