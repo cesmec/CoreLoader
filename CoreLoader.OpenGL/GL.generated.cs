@@ -595,18 +595,6 @@ namespace CoreLoader.OpenGL
         }
         
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void CreateBuffers(int n, uint* buffers)
-        {
-            GlNative.CreateBuffers(n, buffers);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void CreateFramebuffers(int n, uint* framebuffers)
-        {
-            GlNative.CreateFramebuffers(n, framebuffers);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static uint CreateProgram()
         {
             return GlNative.CreateProgram();
@@ -649,21 +637,9 @@ namespace CoreLoader.OpenGL
         }
         
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void CreateTextures(uint target, int n, uint* textures)
-        {
-            GlNative.CreateTextures(target, n, textures);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static void CreateTransformFeedbacks(int n, uint* ids)
         {
             GlNative.CreateTransformFeedbacks(n, ids);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void CreateVertexArrays(int n, uint* arrays)
-        {
-            GlNative.CreateVertexArrays(n, arrays);
         }
         
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
@@ -688,18 +664,6 @@ namespace CoreLoader.OpenGL
         public static void DebugMessageInsert(uint source, uint type, uint id, uint severity, int length, string message)
         {
             GlNative.DebugMessageInsert(source, type, id, severity, length, message);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void DeleteBuffers(int n, uint* buffers)
-        {
-            GlNative.DeleteBuffers(n, buffers);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void DeleteFramebuffers(int n, uint* framebuffers)
-        {
-            GlNative.DeleteFramebuffers(n, framebuffers);
         }
         
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
@@ -745,21 +709,9 @@ namespace CoreLoader.OpenGL
         }
         
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void DeleteTextures(int n, uint* textures)
-        {
-            GlNative.DeleteTextures(n, textures);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static void DeleteTransformFeedbacks(int n, uint* ids)
         {
             GlNative.DeleteTransformFeedbacks(n, ids);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void DeleteVertexArrays(int n, uint* arrays)
-        {
-            GlNative.DeleteVertexArrays(n, arrays);
         }
         
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]

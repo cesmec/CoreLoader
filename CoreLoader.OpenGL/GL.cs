@@ -6,6 +6,130 @@ namespace CoreLoader.OpenGL
     public unsafe partial class GL
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint CreateVertexArray()
+        {
+            uint vao;
+            GlNative.CreateVertexArrays(1, &vao);
+            return vao;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint[] CreateVertexArrays(int count)
+        {
+            var vaos = new uint[count];
+            fixed (uint* firstVao = vaos)
+                GlNative.CreateVertexArrays(count, firstVao);
+            return vaos;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint CreateBuffer()
+        {
+            uint buffer;
+            GlNative.CreateBuffers(1, &buffer);
+            return buffer;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint[] CreateBuffers(int count)
+        {
+            var buffers = new uint[count];
+            fixed (uint* firstBuffer = buffers)
+                GlNative.CreateBuffers(count, firstBuffer);
+            return buffers;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint CreateTexture(uint target)
+        {
+            uint texture;
+            GlNative.CreateTextures(target, 1, &texture);
+            return texture;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint[] CreateTextures(uint target, int count)
+        {
+            var textures = new uint[count];
+            fixed (uint* firstTexture = textures)
+                GlNative.CreateTextures(target, count, firstTexture);
+            return textures;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint CreateFramebuffer()
+        {
+            uint framebuffer;
+            GlNative.CreateFramebuffers(1, &framebuffer);
+            return framebuffer;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint[] CreateFramebuffers(int count)
+        {
+            var framebuffers = new uint[count];
+            fixed (uint* firstFramebuffer = framebuffers)
+                GlNative.CreateBuffers(count, firstFramebuffer);
+            return framebuffers;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DeleteVertexArray(uint vao)
+        {
+            GlNative.DeleteVertexArrays(1, &vao);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DeleteVertexArrays(uint[] vaos)
+        {
+            fixed (uint* firstVao = vaos)
+                GlNative.DeleteVertexArrays(vaos.Length, firstVao);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DeleteBuffer(uint buffer)
+        {
+            GlNative.DeleteBuffers(1, &buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DeleteBuffers(uint[] buffers)
+        {
+            fixed (uint* firstBuffer = buffers)
+                GlNative.DeleteBuffers(buffers.Length, firstBuffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DeleteTexture(uint texture)
+        {
+            GlNative.DeleteTextures(1, &texture);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DeleteTextures(uint[] textures)
+        {
+            fixed (uint* firstTexture = textures)
+                GlNative.DeleteTextures(textures.Length, firstTexture);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint DeleteFramebuffer()
+        {
+            uint framebuffer;
+            GlNative.DeleteFramebuffers(1, &framebuffer);
+            return framebuffer;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint[] DeleteFramebuffers(int count)
+        {
+            var framebuffers = new uint[count];
+            fixed (uint* firstFramebuffer = framebuffers)
+                GlNative.DeleteBuffers(count, firstFramebuffer);
+            return framebuffers;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ShaderSource(uint shader, string source)
         {
             var length = source.Length;
@@ -91,8 +215,13 @@ namespace CoreLoader.OpenGL
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void BufferData<T>(uint target, T[] data, BufferDataUsage usage) where T : unmanaged
         {
-            var size = data.Length * sizeof(T);
-            fixed(T* first = data)
+            BufferData(target, data, data.Length * sizeof(T), usage);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void BufferData<T>(uint target, T[] data, long size, BufferDataUsage usage) where T : unmanaged
+        {
+            fixed (T* first = data)
                 GlNative.BufferData(target, size, first, (uint)usage);
         }
 
@@ -105,7 +234,12 @@ namespace CoreLoader.OpenGL
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void NamedBufferData<T>(uint buffer, T[] data, BufferDataUsage usage) where T : unmanaged
         {
-            var size = data.Length * sizeof(T);
+            NamedBufferData(buffer, data, data.Length * sizeof(T), usage);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void NamedBufferData<T>(uint buffer, T[] data, long size, BufferDataUsage usage) where T : unmanaged
+        {
             fixed (T* first = data)
                 GlNative.NamedBufferData(buffer, size, first, (uint)usage);
         }
