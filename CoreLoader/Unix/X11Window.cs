@@ -69,7 +69,7 @@ namespace CoreLoader.Unix
 
         public bool GetCursorPosition(out Point position)
         {
-            if (X11.XQueryPointer(DisplayPtr, WindowId, out var rootWindow, out var childWindow, out var rootX, out var rootY, out var winX, out var winY, out var mask))
+            if (X11.XQueryPointer(DisplayPtr, WindowId, out _, out _, out _, out _, out var winX, out var winY, out _))
             {
                 position = new Point
                 {
@@ -96,7 +96,7 @@ namespace CoreLoader.Unix
             }
             else
             {
-                X11.XColor black = new X11.XColor();
+                var black = new X11.XColor();
                 var noData = new byte[8];
 
                 var bitmapNoData = X11.XCreateBitmapFromData(DisplayPtr, WindowId, noData, 8, 8);
@@ -117,6 +117,7 @@ namespace CoreLoader.Unix
             Cleanup();
             X11.XDestroyWindow(DisplayPtr, WindowId);
             X11.XCloseDisplay(DisplayPtr);
+            Marshal.FreeHGlobal(EventPtr);
         }
 
         public void PollEvents()

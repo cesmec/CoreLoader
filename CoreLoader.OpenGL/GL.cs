@@ -275,18 +275,48 @@ namespace CoreLoader.OpenGL
         {
             GlNative.ActiveTexture(texture);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void BlendFunc(BlendFuncFactor sfactor, BlendFuncFactor dfactor)
+        {
+            GlNative.BlendFunc((uint)sfactor, (uint)dfactor);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void BlendFunci(uint buf, BlendFuncFactor sfactor, BlendFuncFactor dfactor)
+        {
+            GlNative.BlendFunci(buf, (uint)sfactor, (uint)dfactor);
+        }
     }
 
     public enum BufferDataUsage : uint
     {
-        StreamDraw = 35040u,
-        StreamRead = 35041u,
-        StreamCopy = 35042u,
-        StaticDraw = 35044u,
-        StaticRead = 35045u,
-        StaticCopy = 35046u,
-        DynamicDraw = 35048u,
-        DynamicRead = 35049u,
-        DynamicCopy = 35050u
+        StreamDraw = GlConsts.GL_STREAM_DRAW,
+        StreamRead = GlConsts.GL_STREAM_READ,
+        StreamCopy = GlConsts.GL_STREAM_COPY,
+        StaticDraw = GlConsts.GL_STATIC_DRAW,
+        StaticRead = GlConsts.GL_STATIC_READ,
+        StaticCopy = GlConsts.GL_STATIC_COPY,
+        DynamicDraw = GlConsts.GL_DYNAMIC_DRAW,
+        DynamicRead = GlConsts.GL_DYNAMIC_READ,
+        DynamicCopy = GlConsts.GL_DYNAMIC_COPY
+    }
+
+    public enum BlendFuncFactor : uint
+    {
+        Zero = GlConsts.GL_ZERO,
+        One = GlConsts.GL_ONE,
+        SrcColor = GlConsts.GL_SRC_COLOR,
+        OneMinusSrcColor = GlConsts.GL_ONE_MINUS_SRC_COLOR,
+        DstColor = GlConsts.GL_DST_COLOR,
+        OneMinusDstColor = GlConsts.GL_ONE_MINUS_DST_COLOR,
+        SrcAlpha = GlConsts.GL_SRC_ALPHA,
+        OneMinusSrcAlpha = GlConsts.GL_ONE_MINUS_SRC_ALPHA,
+        DstAlpha = GlConsts.GL_DST_ALPHA,
+        OneMinusDstAlpha = GlConsts.GL_ONE_MINUS_DST_ALPHA,
+        ConstantColor = GlConsts.GL_CONSTANT_COLOR,
+        OneMinusConstantColor = GlConsts.GL_ONE_MINUS_CONSTANT_COLOR,
+        ConstantAlpha = GlConsts.GL_CONSTANT_ALPHA,
+        OneMinusConstantAlpha = GlConsts.GL_ONE_MINUS_CONSTANT_ALPHA
     }
 }
