@@ -111,6 +111,11 @@ namespace CoreLoader.Windows
             User32.DestroyWindow(WindowPtr);
         }
 
+        public void SetCloseRequested()
+        {
+            CloseRequested = true;
+        }
+
         protected abstract void Cleanup();
         protected abstract long Create(IntPtr hWnd);
 

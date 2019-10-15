@@ -74,6 +74,23 @@ namespace CoreLoader.OpenGL
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint CreateRenderbuffer()
+        {
+            uint renderbuffer;
+            GlNative.CreateRenderbuffers(1, &renderbuffer);
+            return renderbuffer;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint[] CreateRenderbuffers(int count)
+        {
+            var renderbuffers = new uint[count];
+            fixed (uint* firstRenderbuffer = renderbuffers)
+                GlNative.CreateRenderbuffers(count, firstRenderbuffer);
+            return renderbuffers;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void DeleteVertexArray(uint vao)
         {
             GlNative.DeleteVertexArrays(1, &vao);
@@ -113,20 +130,29 @@ namespace CoreLoader.OpenGL
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static uint DeleteFramebuffer()
+        public static void DeleteFramebuffer(uint framebuffer)
         {
-            uint framebuffer;
             GlNative.DeleteFramebuffers(1, &framebuffer);
-            return framebuffer;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static uint[] DeleteFramebuffers(int count)
+        public static void DeleteFramebuffers(uint[] framebuffers)
         {
-            var framebuffers = new uint[count];
             fixed (uint* firstFramebuffer = framebuffers)
-                GlNative.DeleteBuffers(count, firstFramebuffer);
-            return framebuffers;
+                GlNative.DeleteBuffers(framebuffers.Length, firstFramebuffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DeleteRenderbuffer(uint renderbuffer)
+        {
+            GlNative.DeleteRenderbuffers(1, &renderbuffer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void DeleteRenderbuffers(uint[] renderbuffers)
+        {
+            fixed (uint* firstRenderbuffer = renderbuffers)
+                GlNative.DeleteRenderbuffers(renderbuffers.Length, firstRenderbuffer);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -215,14 +241,14 @@ namespace CoreLoader.OpenGL
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void BufferData<T>(uint target, T[] data, BufferDataUsage usage) where T : unmanaged
         {
-            BufferData(target, data, data.Length * sizeof(T), usage);
+            BufferData(target, data, data.Length, usage);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void BufferData<T>(uint target, T[] data, long size, BufferDataUsage usage) where T : unmanaged
+        public static void BufferData<T>(uint target, T[] data, int count, BufferDataUsage usage) where T : unmanaged
         {
             fixed (T* first = data)
-                GlNative.BufferData(target, size, first, (uint)usage);
+                GlNative.BufferData(target, count * sizeof(T), first, (uint)usage);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -234,14 +260,14 @@ namespace CoreLoader.OpenGL
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void NamedBufferData<T>(uint buffer, T[] data, BufferDataUsage usage) where T : unmanaged
         {
-            NamedBufferData(buffer, data, data.Length * sizeof(T), usage);
+            NamedBufferData(buffer, data, data.Length, usage);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void NamedBufferData<T>(uint buffer, T[] data, long size, BufferDataUsage usage) where T : unmanaged
+        public static void NamedBufferData<T>(uint buffer, T[] data, int count, BufferDataUsage usage) where T : unmanaged
         {
             fixed (T* first = data)
-                GlNative.NamedBufferData(buffer, size, first, (uint)usage);
+                GlNative.NamedBufferData(buffer, count * sizeof(T), first, (uint)usage);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -249,18 +275,48 @@ namespace CoreLoader.OpenGL
         {
             GlNative.ActiveTexture(texture);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void BlendFunc(BlendFuncFactor sfactor, BlendFuncFactor dfactor)
+        {
+            GlNative.BlendFunc((uint)sfactor, (uint)dfactor);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void BlendFunci(uint buf, BlendFuncFactor sfactor, BlendFuncFactor dfactor)
+        {
+            GlNative.BlendFunci(buf, (uint)sfactor, (uint)dfactor);
+        }
     }
 
     public enum BufferDataUsage : uint
     {
-        StreamDraw = 35040u,
-        StreamRead = 35041u,
-        StreamCopy = 35042u,
-        StaticDraw = 35044u,
-        StaticRead = 35045u,
-        StaticCopy = 35046u,
-        DynamicDraw = 35048u,
-        DynamicRead = 35049u,
-        DynamicCopy = 35050u
+        StreamDraw = GlConsts.GL_STREAM_DRAW,
+        StreamRead = GlConsts.GL_STREAM_READ,
+        StreamCopy = GlConsts.GL_STREAM_COPY,
+        StaticDraw = GlConsts.GL_STATIC_DRAW,
+        StaticRead = GlConsts.GL_STATIC_READ,
+        StaticCopy = GlConsts.GL_STATIC_COPY,
+        DynamicDraw = GlConsts.GL_DYNAMIC_DRAW,
+        DynamicRead = GlConsts.GL_DYNAMIC_READ,
+        DynamicCopy = GlConsts.GL_DYNAMIC_COPY
+    }
+
+    public enum BlendFuncFactor : uint
+    {
+        Zero = GlConsts.GL_ZERO,
+        One = GlConsts.GL_ONE,
+        SrcColor = GlConsts.GL_SRC_COLOR,
+        OneMinusSrcColor = GlConsts.GL_ONE_MINUS_SRC_COLOR,
+        DstColor = GlConsts.GL_DST_COLOR,
+        OneMinusDstColor = GlConsts.GL_ONE_MINUS_DST_COLOR,
+        SrcAlpha = GlConsts.GL_SRC_ALPHA,
+        OneMinusSrcAlpha = GlConsts.GL_ONE_MINUS_SRC_ALPHA,
+        DstAlpha = GlConsts.GL_DST_ALPHA,
+        OneMinusDstAlpha = GlConsts.GL_ONE_MINUS_DST_ALPHA,
+        ConstantColor = GlConsts.GL_CONSTANT_COLOR,
+        OneMinusConstantColor = GlConsts.GL_ONE_MINUS_CONSTANT_COLOR,
+        ConstantAlpha = GlConsts.GL_CONSTANT_ALPHA,
+        OneMinusConstantAlpha = GlConsts.GL_ONE_MINUS_CONSTANT_ALPHA
     }
 }

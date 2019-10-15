@@ -253,18 +253,6 @@ namespace CoreLoader.OpenGL
         }
         
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void BlendFunc(BlendFuncSfactor sfactor, BlendFuncDfactor dfactor)
-        {
-            GlNative.BlendFunc(((uint)(sfactor)), ((uint)(dfactor)));
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void BlendFunci(uint buf, BlendFunciSfactor sfactor, BlendFunciDfactor dfactor)
-        {
-            GlNative.BlendFunci(buf, ((uint)(sfactor)), ((uint)(dfactor)));
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static void BlendFuncSeparate(BlendFuncSeparateSrcRGB srcRGB, BlendFuncSeparateDstRGB dstRGB, BlendFuncSeparateSrcAlpha srcAlpha, BlendFuncSeparateDstAlpha dstAlpha)
         {
             GlNative.BlendFuncSeparate(((uint)(srcRGB)), ((uint)(dstRGB)), ((uint)(srcAlpha)), ((uint)(dstAlpha)));
@@ -613,12 +601,6 @@ namespace CoreLoader.OpenGL
         }
         
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void CreateRenderbuffers(int n, uint* renderbuffers)
-        {
-            GlNative.CreateRenderbuffers(n, renderbuffers);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static void CreateSamplers(int n, uint* samplers)
         {
             GlNative.CreateSamplers(n, samplers);
@@ -682,12 +664,6 @@ namespace CoreLoader.OpenGL
         public static void DeleteQueries(int n, uint* ids)
         {
             GlNative.DeleteQueries(n, ids);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void DeleteRenderbuffers(int n, uint* renderbuffers)
-        {
-            GlNative.DeleteRenderbuffers(n, renderbuffers);
         }
         
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
@@ -8211,82 +8187,6 @@ namespace CoreLoader.OpenGL
         Min = 32775u,
         
         Max = 32776u,
-    }
-    
-    public enum BlendFuncSfactor : uint
-    {
-        
-        One = 1u,
-    }
-    
-    public enum BlendFuncDfactor : uint
-    {
-        
-        Zero = 0u,
-        
-        One = 1u,
-        
-        SrcColor = 768u,
-        
-        OneMinusSrcColor = 769u,
-        
-        DstColor = 774u,
-        
-        OneMinusDstColor = 775u,
-        
-        SrcAlpha = 770u,
-        
-        OneMinusSrcAlpha = 771u,
-        
-        DstAlpha = 772u,
-        
-        OneMinusDstAlpha = 773u,
-        
-        ConstantColor = 32769u,
-        
-        OneMinusConstantColor = 32770u,
-        
-        ConstantAlpha = 32771u,
-        
-        OneMinusConstantAlpha = 32772u,
-    }
-    
-    public enum BlendFunciSfactor : uint
-    {
-        
-        One = 1u,
-    }
-    
-    public enum BlendFunciDfactor : uint
-    {
-        
-        Zero = 0u,
-        
-        One = 1u,
-        
-        SrcColor = 768u,
-        
-        OneMinusSrcColor = 769u,
-        
-        DstColor = 774u,
-        
-        OneMinusDstColor = 775u,
-        
-        SrcAlpha = 770u,
-        
-        OneMinusSrcAlpha = 771u,
-        
-        DstAlpha = 772u,
-        
-        OneMinusDstAlpha = 773u,
-        
-        ConstantColor = 32769u,
-        
-        OneMinusConstantColor = 32770u,
-        
-        ConstantAlpha = 32771u,
-        
-        OneMinusConstantAlpha = 32772u,
     }
     
     public enum BlendFuncSeparateSrcRGB : uint

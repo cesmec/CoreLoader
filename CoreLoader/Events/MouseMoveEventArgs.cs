@@ -4,10 +4,10 @@ namespace CoreLoader.Events
 {
     public class MouseMoveEventArgs : EventArgs
     {
-        public float X { get; }
-        public float Y { get; }
+        public int X { get; }
+        public int Y { get; }
 
-        public MouseMoveEventArgs(float x, float y)
+        public MouseMoveEventArgs(int x, int y)
         {
             X = x;
             Y = y;
