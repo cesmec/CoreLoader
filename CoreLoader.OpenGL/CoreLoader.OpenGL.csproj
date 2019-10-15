@@ -4,6 +4,9 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
+    <Authors>cesmec</Authors>
+    <Description>OpenGL bindings for .Net Core</Description>
+    <RepositoryUrl>https://github.com/cesmec/CoreLoader</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
