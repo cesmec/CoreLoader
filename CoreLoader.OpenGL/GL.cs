@@ -241,14 +241,14 @@ namespace CoreLoader.OpenGL
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void BufferData<T>(uint target, T[] data, BufferDataUsage usage) where T : unmanaged
         {
-            BufferData(target, data, data.Length * sizeof(T), usage);
+            BufferData(target, data, data.Length, usage);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void BufferData<T>(uint target, T[] data, long size, BufferDataUsage usage) where T : unmanaged
+        public static void BufferData<T>(uint target, T[] data, int count, BufferDataUsage usage) where T : unmanaged
         {
             fixed (T* first = data)
-                GlNative.BufferData(target, size, first, (uint)usage);
+                GlNative.BufferData(target, count * sizeof(T), first, (uint)usage);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -260,14 +260,14 @@ namespace CoreLoader.OpenGL
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void NamedBufferData<T>(uint buffer, T[] data, BufferDataUsage usage) where T : unmanaged
         {
-            NamedBufferData(buffer, data, data.Length * sizeof(T), usage);
+            NamedBufferData(buffer, data, data.Length, usage);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void NamedBufferData<T>(uint buffer, T[] data, long size, BufferDataUsage usage) where T : unmanaged
+        public static void NamedBufferData<T>(uint buffer, T[] data, int count, BufferDataUsage usage) where T : unmanaged
         {
             fixed (T* first = data)
-                GlNative.NamedBufferData(buffer, size, first, (uint)usage);
+                GlNative.NamedBufferData(buffer, count * sizeof(T), first, (uint)usage);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

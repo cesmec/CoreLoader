@@ -25,5 +25,6 @@ namespace CoreLoader
         void PollEvents();
         void SwapBuffers();
         void Close();
+        void SetCloseRequested();
     }
 }

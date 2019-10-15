@@ -120,6 +120,11 @@ namespace CoreLoader.Unix
             Marshal.FreeHGlobal(EventPtr);
         }
 
+        public void SetCloseRequested()
+        {
+            CloseRequested = true;
+        }
+
         public void PollEvents()
         {
             while (X11.XPending(DisplayPtr))
