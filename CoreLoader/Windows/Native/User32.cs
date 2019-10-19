@@ -56,6 +56,8 @@ namespace CoreLoader.Windows.Native
             public ushort wCreatorVersion;
         }
 
+        [DllImport(nameof(User32), ExactSpelling = true)]
+        public static extern void AdjustWindowRect(ref Rect rect, WindowStyles style, bool menu);
         [DllImport(nameof(User32), ExactSpelling = true, CharSet = CharSet.Ansi)]
         public static extern ushort RegisterClassA(ref WndClass wndClass);
         [DllImport(nameof(User32), ExactSpelling = true)]

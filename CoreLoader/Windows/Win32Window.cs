@@ -33,7 +33,21 @@ namespace CoreLoader.Windows
                 lpszClassName = "coreloader"
             };
             User32.RegisterClassA(ref wndClass);
-            WindowPtr = User32.CreateWindowExA(0, wndClass.lpszClassName, title, WindowStyles.WS_OVERLAPPEDWINDOW, 0, 0, width, height, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+
+            const int offset = 50;
+
+            var rect = new User32.Rect
+            {
+                top = offset,
+                left = offset,
+                bottom = offset + height,
+                right = offset + width
+            };
+            var style = WindowStyles.WS_OVERLAPPEDWINDOW;
+
+            User32.AdjustWindowRect(ref rect, style, false);
+
+            WindowPtr = User32.CreateWindowExA(0, wndClass.lpszClassName, title, style, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 
             User32.ShowWindow(WindowPtr, 10);
             User32.UpdateWindow(WindowPtr);
