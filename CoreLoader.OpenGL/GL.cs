@@ -233,12 +233,6 @@ namespace CoreLoader.OpenGL
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void BufferData(uint target, long size, void* data, BufferDataUsage usage)
-        {
-            GlNative.BufferData(target, size, data, (uint)usage);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void BufferData<T>(uint target, T[] data, BufferDataUsage usage) where T : unmanaged
         {
             BufferData(target, data, data.Length, usage);
@@ -250,11 +244,24 @@ namespace CoreLoader.OpenGL
             fixed (T* first = data)
                 GlNative.BufferData(target, count * sizeof(T), first, (uint)usage);
         }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void BufferSubData<T>(uint target, int offsetCount, T[] data) where T : unmanaged
+        {
+            BufferSubData(target, offsetCount, data.Length, data);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void NamedBufferData(uint buffer, long size, void* data, BufferDataUsage usage)
+        public static void BufferSubData<T>(uint target, int offsetCount, int count, T[] data) where T : unmanaged
         {
-            GlNative.NamedBufferData(buffer, size, data, (uint)usage);
+            fixed (T* first = data)
+                GlNative.BufferSubData(target, offsetCount * sizeof(T), count * sizeof(T), first);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void BufferSubData<T>(uint target, int offsetCount, int count, T* data) where T : unmanaged
+        {
+            GlNative.BufferSubData(target, offsetCount * sizeof(T), count * sizeof(T), data);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -268,6 +275,25 @@ namespace CoreLoader.OpenGL
         {
             fixed (T* first = data)
                 GlNative.NamedBufferData(buffer, count * sizeof(T), first, (uint)usage);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void NamedBufferSubData<T>(uint buffer, int offsetCount, T[] data) where T : unmanaged
+        {
+            NamedBufferSubData(buffer, offsetCount, data.Length, data);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void NamedBufferSubData<T>(uint buffer, int offsetCount, int count, T[] data) where T : unmanaged
+        {
+            fixed (T* first = data)
+                GlNative.NamedBufferSubData(buffer, offsetCount * sizeof(T), count * sizeof(T), first);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void NamedBufferSubData<T>(uint buffer, int offsetCount, int count, T* data) where T : unmanaged
+        {
+            GlNative.NamedBufferSubData(buffer, offsetCount * sizeof(T), count * sizeof(T), data);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

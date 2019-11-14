@@ -10,7 +10,10 @@ namespace CoreLoader.Windows
         protected readonly IntPtr WindowPtr;
         private readonly User32.WndProc _wndProc;
         private readonly ManualResetEvent _loadedEvent = new ManualResetEvent(false);
+        private bool _cursorVisible = true;
 
+        public int Width { get; private set; }
+        public int Height { get; private set; }
         public bool CloseRequested { get; private set; }
         public IKeys Keys { get; } = new Win32Keys();
 
@@ -24,6 +27,8 @@ namespace CoreLoader.Windows
 
         protected Win32Window(string title, int width, int height)
         {
+            Width = width;
+            Height = height;
             _wndProc = WndProc;
             var wndClass = new User32.WndClass
             {
@@ -98,7 +103,9 @@ namespace CoreLoader.Windows
 
         public void SetCursorVisible(bool visible)
         {
-            User32.ShowCursor(visible);
+            if (_cursorVisible != visible)
+                User32.ShowCursor(visible);
+            _cursorVisible = visible;
         }
 
         public void SetTitle(string title)
@@ -133,7 +140,7 @@ namespace CoreLoader.Windows
         protected abstract void Cleanup();
         protected abstract long Create(IntPtr hWnd);
 
-        private unsafe long WndProc(IntPtr hWnd, uint message, uint wParam, long lParam)
+        private long WndProc(IntPtr hWnd, uint message, uint wParam, long lParam)
         {
             switch (message)
             {
@@ -142,7 +149,9 @@ namespace CoreLoader.Windows
                     _loadedEvent.Set();
                     return value;
                 case 0x0005: //Size
-                    OnResize?.Invoke(this, new ResizeEventArgs((int)(lParam & 0xffff), (int)(lParam >> 16 & 0xffff)));
+                    Width = (int)(lParam & 0xffff);
+                    Height = (int)(lParam >> 16 & 0xffff);
+                    OnResize?.Invoke(this, new ResizeEventArgs(Width, Height));
                     break;
                 case 0x0007: //SetFocus
                     OnFocusChange?.Invoke(this, new FocusChangeEventArgs(true));

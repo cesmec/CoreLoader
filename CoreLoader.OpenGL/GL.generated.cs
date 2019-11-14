@@ -289,18 +289,6 @@ namespace CoreLoader.OpenGL
         }
         
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void BufferSubData(uint target, long offset, long size, void* data)
-        {
-            GlNative.BufferSubData(target, offset, size, data);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void NamedBufferSubData(uint buffer, long offset, long size, void* data)
-        {
-            GlNative.NamedBufferSubData(buffer, offset, size, data);
-        }
-        
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static uint CheckFramebufferStatus(uint target)
         {
             return GlNative.CheckFramebufferStatus(target);

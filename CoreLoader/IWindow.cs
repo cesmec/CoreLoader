@@ -5,6 +5,8 @@ namespace CoreLoader
 {
     public interface IWindow
     {
+        int Width { get; }
+        int Height { get; }
         bool CloseRequested { get; }
         IKeys Keys { get; }
 

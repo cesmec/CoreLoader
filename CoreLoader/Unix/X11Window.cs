@@ -12,6 +12,8 @@ namespace CoreLoader.Unix
         protected readonly IntPtr EventPtr;
         private readonly byte[] _keys = new byte[32];
 
+        public int Width { get; private set; }
+        public int Height { get; private set; }
         public bool CloseRequested { get; private set; }
         public IKeys Keys { get; }
 
@@ -25,6 +27,8 @@ namespace CoreLoader.Unix
 
         protected X11Window(string title, int width, int height)
         {
+            Width = width;
+            Height = height;
             DisplayPtr = X11.XOpenDisplay(null);
             Keys = new UnixKeys(DisplayPtr);
             var display = Marshal.PtrToStructure<X11.XDisplay>(DisplayPtr);
@@ -176,6 +180,8 @@ namespace CoreLoader.Unix
                     case 12: //Expose
                     {
                         var exposeEvent = Marshal.PtrToStructure<XExposeEvent>(EventPtr);
+                        Width = exposeEvent.width;
+                        Height = exposeEvent.height;
                         OnResize?.Invoke(this, new ResizeEventArgs(exposeEvent.width, exposeEvent.height));
                         break;
                     }
