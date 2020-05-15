@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using CoreLoader.OpenGL.Events;
+using CoreLoader.OpenGL.Attributes;
 using CoreLoader.OpenGL.Unix;
 using CoreLoader.OpenGL.Windows;
 
@@ -9,38 +11,53 @@ namespace CoreLoader.OpenGL
 {
     public static class WindowFactory
     {
-        public static event EventHandler<LoadErrorEvent> OnLoadError;
+        private static readonly INativeHelper _nativeHelper = GetNativeHelper();
+
+        public static event EventHandler<ICollection<FunctionLoadError>> OnLoadError;
 
         public static IWindow CreateWindow(string title, int width, int height)
         {
-            var helper = GetNativeHelper();
-            var window = helper.CreateWindow(title, width, height);
+            var window = _nativeHelper.CreateWindow(title, width, height);
 
-            InitOpenGL(helper);
+            var loadErrors = LoadFunctions<GlNative>();
+            if (loadErrors.Any())
+            {
+                OnLoadError?.Invoke(null, loadErrors);
+            }
 
             return window;
         }
 
-        private static void InitOpenGL(INativeHelper nativeHelper)
+        public static ICollection<FunctionLoadError> LoadFunctions<T>() => LoadFunctions(typeof(T));
+
+        public static ICollection<FunctionLoadError> LoadFunctions(Type type)
         {
-            var fields = typeof(GlNative).GetFields(BindingFlags.Public | BindingFlags.Static);
+            var loadErrors = new List<FunctionLoadError>();
+
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach (var field in fields)
             {
-                var functionName = GetFunctionName(field.Name);
+                var functionName = GetFunctionName(field);
                 try
                 {
-                    var handle = nativeHelper.GetFunctionPtr(functionName);
+                    var handle = _nativeHelper.GetFunctionPtr(functionName);
                     var function = Marshal.GetDelegateForFunctionPointer(handle, field.FieldType);
                     field.SetValue(null, function);
                 }
                 catch (Exception e)
                 {
-                    OnLoadError?.Invoke(null, new LoadErrorEvent(e, functionName));
+                    loadErrors.Add(new FunctionLoadError(e, functionName));
                 }
             }
+
+            return loadErrors;
         }
 
-        private static string GetFunctionName(string fieldName) => $"gl{fieldName}";
+        private static string GetFunctionName(FieldInfo field)
+        {
+            var functionNameAttribute = field.GetCustomAttribute<OpenGLFunctionAttribute>();
+            return functionNameAttribute?.Name ?? $"gl{field.Name}";
+        }
 
         private static INativeHelper GetNativeHelper()
         {

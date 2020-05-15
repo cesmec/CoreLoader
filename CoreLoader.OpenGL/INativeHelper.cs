@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CoreLoader
+namespace CoreLoader.OpenGL
 {
     internal interface INativeHelper
     {

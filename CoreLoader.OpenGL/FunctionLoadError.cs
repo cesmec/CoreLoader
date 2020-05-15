@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace CoreLoader.OpenGL.Events
+namespace CoreLoader.OpenGL
 {
-    public class LoadErrorEvent
+    public class FunctionLoadError
     {
         public Exception Exception { get; }
         public string FunctionName { get; }
 
-        public LoadErrorEvent(Exception exception, string functionName)
+        public FunctionLoadError(Exception exception, string functionName)
         {
             Exception = exception;
             FunctionName = functionName;
