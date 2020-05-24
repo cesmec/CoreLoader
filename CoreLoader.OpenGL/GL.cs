@@ -313,6 +313,20 @@ namespace CoreLoader.OpenGL
         {
             GlNative.BlendFunci(buf, (uint)sfactor, (uint)dfactor);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string GetString(StringName name)
+        {
+            var str = GlNative.GetString((uint)name);
+            return new string((sbyte*)str);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string GetStringi(StringName name, uint index)
+        {
+            var str = GlNative.GetStringi((uint)name, index);
+            return new string((sbyte*)str);
+        }
     }
 
     public enum BufferDataUsage : uint
@@ -344,5 +358,14 @@ namespace CoreLoader.OpenGL
         OneMinusConstantColor = GlConsts.GL_ONE_MINUS_CONSTANT_COLOR,
         ConstantAlpha = GlConsts.GL_CONSTANT_ALPHA,
         OneMinusConstantAlpha = GlConsts.GL_ONE_MINUS_CONSTANT_ALPHA
+    }
+
+    public enum StringName : uint
+    {
+        Vendor = GlConsts.GL_VENDOR,
+        Renderer = GlConsts.GL_RENDERER,
+        Version = GlConsts.GL_VERSION,
+        ShadingLanguageVersion = GlConsts.GL_SHADING_LANGUAGE_VERSION,
+        Extensions = GlConsts.GL_EXTENSIONS
     }
 }
