@@ -115,11 +115,11 @@ namespace CoreLoader.Windows
 
         public void PollEvents()
         {
-            var msg = new User32.Msg();
-            while (User32.PeekMessageA(ref msg, WindowPtr, 0, 0, 1))
+            var msg = IntPtr.Zero;
+            while (User32.PeekMessageA(msg, WindowPtr, 0, 0, 1))
             {
-                User32.TranslateMessage(ref msg);
-                User32.DispatchMessageA(ref msg);
+                User32.TranslateMessage(msg);
+                User32.DispatchMessageA(msg);
             }
         }
 

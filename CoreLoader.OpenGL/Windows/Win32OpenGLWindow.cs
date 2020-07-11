@@ -35,7 +35,7 @@ namespace CoreLoader.OpenGL.Windows
                     dwFlags = 0x4 /*PFD_DRAW_TO_WINDOW*/ | 0x20 /*PFD_SUPPORT_OPENGL*/ | 0x1 /*PFD_DOUBLEBUFFER*/,
                     iPixelType = 0 /*PFD_TYPE_RGBA*/,
                     cColorBits = 32,
-                    cDepthBits = 24,
+                    cDepthBits = 32,
                     cStencilBits = 8,
                     cAuxBuffers = 0,
                     iLayerType = 0 /*PFD_MAIN_PLANE*/

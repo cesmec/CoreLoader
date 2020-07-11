@@ -6,16 +6,6 @@ namespace CoreLoader.Windows.Native
 {
     public static class User32
     {
-        public struct Msg
-        {
-            public IntPtr hwnd;
-            public uint message;
-            public uint wParam;
-            public long lParam;
-            public ulong time;
-            public Point pt;
-        }
-
         public delegate long WndProc(IntPtr hWnd, uint message, uint wParam, long lParam);
 
         public struct WndClass
@@ -73,11 +63,11 @@ namespace CoreLoader.Windows.Native
         [DllImport(nameof(User32), ExactSpelling = true)]
         public static extern bool DestroyWindow(IntPtr hWnd);
         [DllImport(nameof(User32), ExactSpelling = true)]
-        public static extern bool PeekMessageA(ref Msg msg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax, uint wRemoveMsg);
+        public static extern bool PeekMessageA(IntPtr msg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax, uint wRemoveMsg);
         [DllImport(nameof(User32), ExactSpelling = true)]
-        public static extern void TranslateMessage(ref Msg msg);
+        public static extern void TranslateMessage(IntPtr msg);
         [DllImport(nameof(User32), ExactSpelling = true)]
-        public static extern void DispatchMessageA(ref Msg msg);
+        public static extern void DispatchMessageA(IntPtr msg);
         [DllImport(nameof(User32), ExactSpelling = true)]
         public static extern IntPtr GetDC(IntPtr hWnd);
         [DllImport(nameof(User32), ExactSpelling = true)]
