@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using CoreLoader.Events;
 using CoreLoader.Windows.Native;
@@ -9,6 +10,7 @@ namespace CoreLoader.Windows
     {
         protected readonly IntPtr WindowPtr;
         private readonly User32.WndProc _wndProc;
+        private readonly IntPtr _msg;
         private readonly ManualResetEvent _loadedEvent = new ManualResetEvent(false);
         private bool _cursorVisible = true;
 
@@ -60,6 +62,9 @@ namespace CoreLoader.Windows
             //wglGetProcAddress only works after wglMakeCurrent has been called
             _loadedEvent.WaitOne();
             _loadedEvent.Dispose();
+
+            const int sizeofMsg = 48;
+            _msg = Marshal.AllocHGlobal(sizeofMsg);
         }
 
         public KeyState GetKeyState(uint key)
@@ -115,11 +120,10 @@ namespace CoreLoader.Windows
 
         public void PollEvents()
         {
-            var msg = IntPtr.Zero;
-            while (User32.PeekMessageA(msg, WindowPtr, 0, 0, 1))
+            while (User32.PeekMessageA(_msg, WindowPtr, 0, 0, 1))
             {
-                User32.TranslateMessage(msg);
-                User32.DispatchMessageA(msg);
+                User32.TranslateMessage(_msg);
+                User32.DispatchMessageA(_msg);
             }
         }
 
@@ -128,6 +132,7 @@ namespace CoreLoader.Windows
         public void Close()
         {
             Cleanup();
+            Marshal.FreeHGlobal(_msg);
             User32.CloseWindow(WindowPtr);
             User32.DestroyWindow(WindowPtr);
         }
