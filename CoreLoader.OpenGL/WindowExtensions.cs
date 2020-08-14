@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using CoreLoader.OpenGL.Attributes;
@@ -9,23 +8,14 @@ using CoreLoader.OpenGL.Windows;
 
 namespace CoreLoader.OpenGL
 {
-    public static class WindowFactory
+    public static class WindowExtensions
     {
-        private static readonly INativeHelper _nativeHelper = GetNativeHelper();
+        private static readonly INativeHelper NativeHelper = GetNativeHelper();
 
-        public static event EventHandler<ICollection<FunctionLoadError>> OnLoadError;
-
-        public static IWindow CreateWindow(string title, int width, int height)
+        public static void UseOpenGL(this IWindow window)
         {
-            var window = _nativeHelper.CreateWindow(title, width, height);
-
-            var loadErrors = LoadFunctions<GlNative>();
-            if (loadErrors.Any())
-            {
-                OnLoadError?.Invoke(null, loadErrors);
-            }
-
-            return window;
+            var extensions = NativeHelper.GetWindowExtensions(window.NativeWindow);
+            window.SetWindowExtensions(extensions);
         }
 
         public static ICollection<FunctionLoadError> LoadFunctions<T>() => LoadFunctions(typeof(T));
@@ -40,7 +30,7 @@ namespace CoreLoader.OpenGL
                 var functionName = GetFunctionName(field);
                 try
                 {
-                    var handle = _nativeHelper.GetFunctionPtr(functionName);
+                    var handle = NativeHelper.GetFunctionPtr(functionName);
                     var function = Marshal.GetDelegateForFunctionPointer(handle, field.FieldType);
                     field.SetValue(null, function);
                 }
@@ -63,18 +53,14 @@ namespace CoreLoader.OpenGL
         {
             switch (Environment.OSVersion.Platform)
             {
-                case PlatformID.MacOSX:
-                    throw new PlatformNotSupportedException();
                 case PlatformID.Unix:
                     if (!Environment.Is64BitOperatingSystem)
                         throw new PlatformNotSupportedException($"Only 64-bit unix systems are supported");
                     return new UnixNativeHelper();
+
                 case PlatformID.Win32NT:
-                case PlatformID.Win32S:
-                case PlatformID.Win32Windows:
-                case PlatformID.WinCE:
-                case PlatformID.Xbox:
                     return new WindowsNativeHelper();
+
                 default:
                     throw new PlatformNotSupportedException();
             }

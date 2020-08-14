@@ -1,4 +1,5 @@
 using System.Text;
+using CoreLoader.Input;
 using CoreLoader.Windows.Native;
 
 namespace CoreLoader.Windows

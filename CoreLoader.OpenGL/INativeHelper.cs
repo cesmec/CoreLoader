@@ -2,9 +2,9 @@
 
 namespace CoreLoader.OpenGL
 {
-    internal interface INativeHelper
+    internal interface INativeHelper : IDisposable
     {
-        IWindow CreateWindow(string title, int width, int height);
+        IWindowExtensions GetWindowExtensions(INativeWindow window);
         IntPtr GetFunctionPtr(string functionName);
     }
 }

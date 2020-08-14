@@ -1,4 +1,4 @@
-﻿namespace CoreLoader
+﻿namespace CoreLoader.Input
 {
     public enum KeyState
     {

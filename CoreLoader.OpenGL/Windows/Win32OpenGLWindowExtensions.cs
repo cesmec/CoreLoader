@@ -1,29 +1,37 @@
 ﻿using System;
-using CoreLoader.Windows;
 using CoreLoader.Windows.Native;
 
 namespace CoreLoader.OpenGL.Windows
 {
-    internal sealed class Win32OpenGLWindow : Win32Window
+    internal sealed class Win32OpenGLWindowExtensions : IWindowExtensions
     {
+        private readonly INativeWindow _window;
         private IntPtr _deviceContext;
         private IntPtr _openGlContext;
 
-        public Win32OpenGLWindow(string title, int width, int height) : base(title, width, height)
+        public Win32OpenGLWindowExtensions(INativeWindow window)
         {
+            _window = window;
         }
 
-        public override void SwapBuffers()
+        public void SwapBuffers()
         {
             Gdi32.SwapBuffers(_deviceContext);
         }
 
-        protected override void Cleanup()
+        public void Cleanup()
         {
             OpenGl32.WglDeleteContext(_openGlContext);
         }
 
-        protected override long Create(IntPtr hWnd)
+        public void OnShow()
+        {
+            MakeContextCurrent();
+
+            WindowExtensions.LoadFunctions<GlNative>();
+        }
+
+        private void MakeContextCurrent()
         {
             unsafe
             {
@@ -40,7 +48,7 @@ namespace CoreLoader.OpenGL.Windows
                     cAuxBuffers = 0,
                     iLayerType = 0 /*PFD_MAIN_PLANE*/
                 };
-                _deviceContext = User32.GetDC(hWnd);
+                _deviceContext = User32.GetDC(_window.NativeHandle);
 
                 var pixelFormat = Gdi32.ChoosePixelFormat(_deviceContext, ref pfd);
                 Gdi32.SetPixelFormat(_deviceContext, pixelFormat, ref pfd);
@@ -56,8 +64,6 @@ namespace CoreLoader.OpenGL.Windows
 
                 OpenGl32.WglMakeCurrent(_deviceContext, _openGlContext);
                 OpenGl32.WglDeleteContext(tempContext);
-
-                return 0;
             }
         }
     }

@@ -2,13 +2,13 @@
 using System.Runtime.InteropServices;
 using System.Threading;
 using CoreLoader.Events;
+using CoreLoader.Input;
 using CoreLoader.Windows.Native;
 
 namespace CoreLoader.Windows
 {
-    public abstract class Win32Window : IWindow
+    internal sealed class Win32Window : INativeWindow
     {
-        protected readonly IntPtr WindowPtr;
         private readonly User32.WndProc _wndProc;
         private readonly IntPtr _msg;
         private readonly ManualResetEvent _loadedEvent = new ManualResetEvent(false);
@@ -18,6 +18,8 @@ namespace CoreLoader.Windows
         public int Height { get; private set; }
         public bool CloseRequested { get; private set; }
         public IKeys Keys { get; } = new Win32Keys();
+        public IntPtr NativeHandle { get; }
+        uint INativeWindow.WindowId => 0;
 
         public event EventHandler<KeyEventArgs> OnKeyDown;
         public event EventHandler<KeyEventArgs> OnKeyUp;
@@ -27,7 +29,7 @@ namespace CoreLoader.Windows
         public event EventHandler<ResizeEventArgs> OnResize;
         public event EventHandler<FocusChangeEventArgs> OnFocusChange;
 
-        protected Win32Window(string title, int width, int height)
+        internal Win32Window(string title, int width, int height)
         {
             Width = width;
             Height = height;
@@ -54,17 +56,20 @@ namespace CoreLoader.Windows
 
             User32.AdjustWindowRect(ref rect, style, false);
 
-            WindowPtr = User32.CreateWindowExA(0, wndClass.lpszClassName, title, style, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
+            NativeHandle = User32.CreateWindowExA(0, wndClass.lpszClassName, title, style, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero);
 
-            User32.ShowWindow(WindowPtr, 10);
-            User32.UpdateWindow(WindowPtr);
+            const int sizeofMsg = 48;
+            _msg = Marshal.AllocHGlobal(sizeofMsg);
+        }
+
+        public void Show()
+        {
+            User32.ShowWindow(NativeHandle, 10);
+            User32.UpdateWindow(NativeHandle);
 
             //wglGetProcAddress only works after wglMakeCurrent has been called
             _loadedEvent.WaitOne();
             _loadedEvent.Dispose();
-
-            const int sizeofMsg = 48;
-            _msg = Marshal.AllocHGlobal(sizeofMsg);
         }
 
         public KeyState GetKeyState(uint key)
@@ -84,7 +89,7 @@ namespace CoreLoader.Windows
 
         public bool GetCursorPosition(out Point position)
         {
-            if (!User32.GetCursorPos(out var cursorPos) || !User32.GetWindowInfo(WindowPtr, out var windowInfo))
+            if (!User32.GetCursorPos(out var cursorPos) || !User32.GetWindowInfo(NativeHandle, out var windowInfo))
             {
                 position = new Point();
                 return false;
@@ -100,7 +105,7 @@ namespace CoreLoader.Windows
 
         public void SetCursorPosition(in Point position)
         {
-            if (User32.GetWindowInfo(WindowPtr, out var windowInfo))
+            if (User32.GetWindowInfo(NativeHandle, out var windowInfo))
             {
                 User32.SetCursorPos(position.X + windowInfo.rcClient.left, position.Y + windowInfo.rcClient.top);
             }
@@ -115,26 +120,23 @@ namespace CoreLoader.Windows
 
         public void SetTitle(string title)
         {
-            User32.SetWindowTextA(WindowPtr, title);
+            User32.SetWindowTextA(NativeHandle, title);
         }
 
         public void PollEvents()
         {
-            while (User32.PeekMessageA(_msg, WindowPtr, 0, 0, 1))
+            while (User32.PeekMessageA(_msg, NativeHandle, 0, 0, 1))
             {
                 User32.TranslateMessage(_msg);
                 User32.DispatchMessageA(_msg);
             }
         }
 
-        public abstract void SwapBuffers();
-
         public void Close()
         {
-            Cleanup();
             Marshal.FreeHGlobal(_msg);
-            User32.CloseWindow(WindowPtr);
-            User32.DestroyWindow(WindowPtr);
+            User32.CloseWindow(NativeHandle);
+            User32.DestroyWindow(NativeHandle);
         }
 
         public void SetCloseRequested()
@@ -142,17 +144,13 @@ namespace CoreLoader.Windows
             CloseRequested = true;
         }
 
-        protected abstract void Cleanup();
-        protected abstract long Create(IntPtr hWnd);
-
         private long WndProc(IntPtr hWnd, uint message, uint wParam, long lParam)
         {
             switch (message)
             {
                 case 0x0001: //Create
-                    var value = Create(hWnd);
                     _loadedEvent.Set();
-                    return value;
+                    break;
                 case 0x0005: //Size
                     Width = (int)(lParam & 0xffff);
                     Height = (int)(lParam >> 16 & 0xffff);
@@ -210,5 +208,8 @@ namespace CoreLoader.Windows
 
             return User32.DefWindowProcA(hWnd, message, wParam, lParam);
         }
+
+        public void SetWindowExtensions(IWindowExtensions extensions)
+        { }
     }
 }

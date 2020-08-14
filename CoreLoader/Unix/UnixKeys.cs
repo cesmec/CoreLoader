@@ -1,4 +1,5 @@
 using System;
+using CoreLoader.Input;
 using CoreLoader.Unix.Native;
 
 namespace CoreLoader.Unix

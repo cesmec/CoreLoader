@@ -4,9 +4,9 @@ namespace CoreLoader.OpenGL.Unix
 {
     internal sealed class UnixNativeHelper : INativeHelper
     {
-        public IWindow CreateWindow(string title, int width, int height)
+        public IWindowExtensions GetWindowExtensions(INativeWindow window)
         {
-            return new X11OpenGLWindow(title, width, height);
+            return new X11OpenGLWindowExtensions(window);
         }
 
         public IntPtr GetFunctionPtr(string functionName)
@@ -18,5 +18,8 @@ namespace CoreLoader.OpenGL.Unix
             }
             return address;
         }
+
+        public void Dispose()
+        { }
     }
 }

@@ -1,21 +1,25 @@
 using System;
 using System.Runtime.InteropServices;
 using CoreLoader.Events;
+using CoreLoader.Input;
 using CoreLoader.Unix.Native;
 
 namespace CoreLoader.Unix
 {
-    public abstract class X11Window : IWindow
+    internal sealed class X11Window : INativeWindow
     {
-        protected readonly IntPtr DisplayPtr;
-        protected readonly uint WindowId;
-        protected readonly IntPtr EventPtr;
+        private readonly string _title;
         private readonly byte[] _keys = new byte[32];
+        private IX11WindowExtensions _x11Extensions;
 
         public int Width { get; private set; }
         public int Height { get; private set; }
         public bool CloseRequested { get; private set; }
         public IKeys Keys { get; }
+
+        public IntPtr NativeHandle { get; }
+        public uint WindowId { get; private set; }
+        internal IntPtr EventPtr { get; }
 
         public event EventHandler<KeyEventArgs> OnKeyDown;
         public event EventHandler<KeyEventArgs> OnKeyUp;
@@ -25,23 +29,33 @@ namespace CoreLoader.Unix
         public event EventHandler<ResizeEventArgs> OnResize;
         public event EventHandler<FocusChangeEventArgs> OnFocusChange;
 
-        protected X11Window(string title, int width, int height)
+        internal X11Window(string title, int width, int height)
         {
+            _title = title;
             Width = width;
             Height = height;
-            DisplayPtr = X11.XOpenDisplay(null);
-            Keys = new UnixKeys(DisplayPtr);
-            var display = Marshal.PtrToStructure<X11.XDisplay>(DisplayPtr);
+            NativeHandle = X11.XOpenDisplay(null);
+            Keys = new UnixKeys(NativeHandle);
+
+            EventPtr = Marshal.AllocHGlobal(Marshal.SizeOf<XEvent>());
+        }
+
+        public void Show()
+        {
+            if (_x11Extensions == null)
+                throw new InvalidOperationException("No Graphics API implementation in use");
+
+            var display = Marshal.PtrToStructure<X11.XDisplay>(NativeHandle);
             var screen = Marshal.PtrToStructure<X11.Screen>(display.screens + display.default_screen);
 
-            var visualInfo = GetVisualInfo(display);
+            var visualInfo = _x11Extensions.GetVisualInfo(display);
             var visual = Marshal.PtrToStructure<X11.Visual>(visualInfo.visual);
 
-            var cmap = X11.XCreateColormap(DisplayPtr, screen.root, ref visual, 0 /*AllocNone*/);
+            var cmap = X11.XCreateColormap(NativeHandle, screen.root, ref visual, 0 /*AllocNone*/);
             var windowAttributes = new X11.XSetWindowAttributes
             {
                 colormap = cmap,
-                event_mask = 
+                event_mask =
                     1L << 0 /*KeyPressMask*/ |
                     1L << 1 /*KeyReleaseMask*/ |
                     1L << 2 /*ButtonPressMask*/ |
@@ -50,18 +64,16 @@ namespace CoreLoader.Unix
                     1L << 15 /*ExposureMask*/ |
                     1L << 21 /*FocusChangeMask*/
             };
-            WindowId = X11.XCreateWindow(DisplayPtr, screen.root, 0, 0, (uint)width, (uint)height, 0, visualInfo.depth, 0, ref visual, 1L << 13/*CWColormap*/ | 1L << 11/*CWEventMask*/, ref windowAttributes);
+            WindowId = X11.XCreateWindow(NativeHandle, screen.root, 0, 0, (uint)Width, (uint)Height, 0, visualInfo.depth, 0, ref visual, 1L << 13/*CWColormap*/ | 1L << 11/*CWEventMask*/, ref windowAttributes);
 
-            X11.XMapWindow(DisplayPtr, WindowId);
-            X11.XStoreName(DisplayPtr, WindowId, title);
+            X11.XMapWindow(NativeHandle, WindowId);
+            X11.XStoreName(NativeHandle, WindowId, _title);
 
             //Attach events
-            var wmResize = X11.XInternAtom(DisplayPtr, "WM_SIZE_HINTS", true);
-            var wmDelete = X11.XInternAtom(DisplayPtr, "WM_DELETE_WINDOW", true);
+            var wmResize = X11.XInternAtom(NativeHandle, "WM_SIZE_HINTS", true);
+            var wmDelete = X11.XInternAtom(NativeHandle, "WM_DELETE_WINDOW", true);
             var events = new[] { wmResize, wmDelete };
-            X11.XSetWMProtocols(DisplayPtr, WindowId, events, events.Length);
-
-            EventPtr = Marshal.AllocHGlobal(Marshal.SizeOf<XEvent>());
+            X11.XSetWMProtocols(NativeHandle, WindowId, events, events.Length);
         }
 
         public KeyState GetKeyState(uint key)
@@ -73,7 +85,7 @@ namespace CoreLoader.Unix
 
         public bool GetCursorPosition(out Point position)
         {
-            if (X11.XQueryPointer(DisplayPtr, WindowId, out _, out _, out _, out _, out var winX, out var winY, out _))
+            if (X11.XQueryPointer(NativeHandle, WindowId, out _, out _, out _, out _, out var winX, out var winY, out _))
             {
                 position = new Point
                 {
@@ -89,38 +101,37 @@ namespace CoreLoader.Unix
 
         public void SetCursorPosition(in Point position)
         {
-            X11.XWarpPointer(DisplayPtr, 0, WindowId, 0, 0, 0, 0, position.X, position.Y);
+            X11.XWarpPointer(NativeHandle, 0, WindowId, 0, 0, 0, 0, position.X, position.Y);
         }
 
         public void SetCursorVisible(bool visible)
         {
             if (visible)
             {
-                X11.XUndefineCursor(DisplayPtr, WindowId);
+                X11.XUndefineCursor(NativeHandle, WindowId);
             }
             else
             {
                 var black = new X11.XColor();
                 var noData = new byte[8];
 
-                var bitmapNoData = X11.XCreateBitmapFromData(DisplayPtr, WindowId, noData, 8, 8);
-                var invisibleCursor = X11.XCreatePixmapCursor(DisplayPtr, bitmapNoData, bitmapNoData, ref black, ref black, 0, 0);
-                X11.XDefineCursor(DisplayPtr, WindowId, invisibleCursor);
-                X11.XFreeCursor(DisplayPtr, invisibleCursor);
-                X11.XFreePixmap(DisplayPtr, bitmapNoData);
+                var bitmapNoData = X11.XCreateBitmapFromData(NativeHandle, WindowId, noData, 8, 8);
+                var invisibleCursor = X11.XCreatePixmapCursor(NativeHandle, bitmapNoData, bitmapNoData, ref black, ref black, 0, 0);
+                X11.XDefineCursor(NativeHandle, WindowId, invisibleCursor);
+                X11.XFreeCursor(NativeHandle, invisibleCursor);
+                X11.XFreePixmap(NativeHandle, bitmapNoData);
             }
         }
 
         public void SetTitle(string title)
         {
-            X11.XStoreName(DisplayPtr, WindowId, title);
+            X11.XStoreName(NativeHandle, WindowId, title);
         }
 
         public void Close()
         {
-            Cleanup();
-            X11.XDestroyWindow(DisplayPtr, WindowId);
-            X11.XCloseDisplay(DisplayPtr);
+            X11.XDestroyWindow(NativeHandle, WindowId);
+            X11.XCloseDisplay(NativeHandle);
             Marshal.FreeHGlobal(EventPtr);
         }
 
@@ -131,9 +142,9 @@ namespace CoreLoader.Unix
 
         public void PollEvents()
         {
-            while (X11.XPending(DisplayPtr))
+            while (X11.XPending(NativeHandle))
             {
-                X11.XNextEvent(DisplayPtr, EventPtr);
+                X11.XNextEvent(NativeHandle, EventPtr);
                 var ev = Marshal.PtrToStructure<XEvent>(EventPtr);
                 switch (ev.type)
                 {
@@ -197,12 +208,13 @@ namespace CoreLoader.Unix
                 }
             }
 
-            X11.XQueryKeymap(DisplayPtr, _keys);
+            X11.XQueryKeymap(NativeHandle, _keys);
         }
 
-        public abstract void SwapBuffers();
-
-        protected abstract X11.XVisualInfo GetVisualInfo(X11.XDisplay display);
-        protected abstract void Cleanup();
+        public void SetWindowExtensions(IWindowExtensions extensions)
+        {
+            if (extensions is IX11WindowExtensions x11Extensions)
+                _x11Extensions = x11Extensions;
+        }
     }
 }

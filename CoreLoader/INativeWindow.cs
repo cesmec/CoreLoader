@@ -4,12 +4,15 @@ using CoreLoader.Input;
 
 namespace CoreLoader
 {
-    public interface IWindow : IExtendableWindow
+    public interface INativeWindow
     {
         int Width { get; }
         int Height { get; }
         bool CloseRequested { get; }
         IKeys Keys { get; }
+
+        IntPtr NativeHandle { get; }
+        uint WindowId { get; }
 
         event EventHandler<KeyEventArgs> OnKeyDown;
         event EventHandler<KeyEventArgs> OnKeyUp;
@@ -26,9 +29,9 @@ namespace CoreLoader
 
         void SetTitle(string title);
         void PollEvents();
-        void SwapBuffers();
         void Show();
         void Close();
         void SetCloseRequested();
+        void SetWindowExtensions(IWindowExtensions extensions);
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using CoreLoader.Windows.Native;
+using System.Runtime.InteropServices;
 
 namespace CoreLoader.OpenGL.Windows
 {
@@ -9,12 +9,12 @@ namespace CoreLoader.OpenGL.Windows
 
         public WindowsNativeHelper()
         {
-            _openGlLibrary = Kernel32.LoadLibraryA("opengl32.dll");
+            _openGlLibrary = NativeLibrary.Load("opengl32.dll");
         }
 
-        public IWindow CreateWindow(string title, int width, int height)
+        public IWindowExtensions GetWindowExtensions(INativeWindow window)
         {
-            return new Win32OpenGLWindow(title, width, height);
+            return new Win32OpenGLWindowExtensions(window);
         }
 
         public IntPtr GetFunctionPtr(string functionName)
@@ -22,9 +22,14 @@ namespace CoreLoader.OpenGL.Windows
             var address = OpenGl32.WglGetProcAddress(functionName);
             if (address == IntPtr.Zero)
             {
-                address = Kernel32.GetProcAddress(_openGlLibrary, functionName);
+                NativeLibrary.TryGetExport(_openGlLibrary, functionName, out address);
             }
             return address;
+        }
+
+        public void Dispose()
+        {
+            NativeLibrary.Free(_openGlLibrary);
         }
     }
 }
