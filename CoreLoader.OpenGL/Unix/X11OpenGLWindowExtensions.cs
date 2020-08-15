@@ -30,7 +30,7 @@ namespace CoreLoader.OpenGL.Unix
             _contextPtr = OpenGl.GlXCreateContext(_window.NativeHandle, ref _visualInfo, IntPtr.Zero, true);
             OpenGl.GlXMakeCurrent(_window.NativeHandle, _window.WindowId, _contextPtr);
 
-            WindowExtensions.LoadFunctions<GlNative>();
+            WindowExtensions.LoadDefaultOpenGLFunctions();
         }
 
         public void SwapBuffers()
@@ -42,6 +42,7 @@ namespace CoreLoader.OpenGL.Unix
         {
             OpenGl.GlXMakeCurrent(_window.NativeHandle, 0, IntPtr.Zero);
             OpenGl.GlXDestroyContext(_window.NativeHandle, _contextPtr);
+            WindowExtensions.Cleanup();
         }
     }
 }

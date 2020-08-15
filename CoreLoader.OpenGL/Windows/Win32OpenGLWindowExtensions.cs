@@ -21,14 +21,17 @@ namespace CoreLoader.OpenGL.Windows
 
         public void Cleanup()
         {
+            OpenGl32.WglMakeCurrent(_deviceContext, IntPtr.Zero);
             OpenGl32.WglDeleteContext(_openGlContext);
+
+            WindowExtensions.Cleanup();
         }
 
         public void OnShow()
         {
             MakeContextCurrent();
 
-            WindowExtensions.LoadFunctions<GlNative>();
+            WindowExtensions.LoadDefaultOpenGLFunctions();
         }
 
         private void MakeContextCurrent()

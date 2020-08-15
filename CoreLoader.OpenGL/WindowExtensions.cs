@@ -10,7 +10,9 @@ namespace CoreLoader.OpenGL
 {
     public static class WindowExtensions
     {
-        private static readonly INativeHelper NativeHelper = GetNativeHelper();
+        private static readonly List<string> MissingOpenGLFunctions = new List<string>();
+        private static INativeHelper Helper;
+        private static INativeHelper NativeHelper => Helper ??= GetNativeHelper();
 
         public static void UseOpenGL(this IWindow window)
         {
@@ -18,29 +20,33 @@ namespace CoreLoader.OpenGL
             window.SetWindowExtensions(extensions);
         }
 
-        public static ICollection<FunctionLoadError> LoadFunctions<T>() => LoadFunctions(typeof(T));
+        public static IReadOnlyList<string> GetMissingOpenGLFunctionNames(this IWindow _) => MissingOpenGLFunctions;
 
-        public static ICollection<FunctionLoadError> LoadFunctions(Type type)
+        public static void LoadOpenGLFunctions<T>(this IWindow _)
         {
-            var loadErrors = new List<FunctionLoadError>();
-
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static);
+            var fields = typeof(T).GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach (var field in fields)
             {
                 var functionName = GetFunctionName(field);
-                try
+
+                var handle = NativeHelper.GetFunctionPtr(functionName);
+                if (handle == IntPtr.Zero)
                 {
-                    var handle = NativeHelper.GetFunctionPtr(functionName);
+                    MissingOpenGLFunctions.Add(functionName);
+                }
+                else
+                {
                     var function = Marshal.GetDelegateForFunctionPointer(handle, field.FieldType);
                     field.SetValue(null, function);
                 }
-                catch (Exception e)
-                {
-                    loadErrors.Add(new FunctionLoadError(e, functionName));
-                }
             }
+        }
 
-            return loadErrors;
+        internal static void LoadDefaultOpenGLFunctions() => LoadOpenGLFunctions<GlNative>(null);
+
+        internal static void Cleanup()
+        {
+            Helper?.Dispose();
         }
 
         private static string GetFunctionName(FieldInfo field)
