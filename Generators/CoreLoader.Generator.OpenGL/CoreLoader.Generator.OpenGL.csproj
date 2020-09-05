@@ -8,6 +8,7 @@
     <Authors>cesmec</Authors>
     <Description>Used to generate OpenGL bindings based on the OpenGL-Refpages</Description>
     <RepositoryUrl>https://github.com/cesmec/CoreLoader</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
