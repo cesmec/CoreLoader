@@ -15,6 +15,18 @@ namespace CoreLoader
         public IKeys Keys => _nativeWindow.Keys;
 
         INativeWindow IExtendableWindow.NativeWindow => _nativeWindow;
+        IWindowExtensions IExtendableWindow.WindowExtensions
+        {
+            get => _extensions;
+            set
+            {
+                if (_extensions != null)
+                    throw new InvalidOperationException("Extensions have already been set");
+
+                _extensions = value;
+                _nativeWindow.SetWindowExtensions(value);
+            }
+        }
 
         public event EventHandler<KeyEventArgs> OnKeyDown
         {
@@ -78,14 +90,5 @@ namespace CoreLoader
         }
 
         public void SwapBuffers() => _extensions?.SwapBuffers();
-
-        void IExtendableWindow.SetWindowExtensions(IWindowExtensions extensions)
-        {
-            if (_extensions != null)
-                throw new InvalidOperationException("Extensions have already been set");
-
-            _extensions = extensions;
-            _nativeWindow.SetWindowExtensions(extensions);
-        }
     }
 }

@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest</AnalysisLevel>
     <Authors>cesmec</Authors>
     <Description>Base library for using GUIs in .Net Core</Description>
     <RepositoryUrl>https://github.com/cesmec/CoreLoader</RepositoryUrl>

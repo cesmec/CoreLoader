@@ -22,5 +22,7 @@ namespace CoreLoader.OpenGL.Unix
         public static extern void GlXDestroyContext(IntPtr display, IntPtr context);
         [DllImport(LibName, ExactSpelling = true, EntryPoint = "glXSwapBuffers")]
         public static extern void GlXSwapBuffers(IntPtr displayPtr, uint window);
+        [DllImport(LibName, ExactSpelling = true, EntryPoint = "glXQueryExtensionsString")]
+        public static extern string GlXQueryExtensionsString(IntPtr displayPtr, int screen);
     }
 }

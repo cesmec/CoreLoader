@@ -17,7 +17,7 @@ namespace CoreLoader.OpenGL
         public static void UseOpenGL(this IWindow window)
         {
             var extensions = NativeHelper.GetWindowExtensions(window.NativeWindow);
-            window.SetWindowExtensions(extensions);
+            window.WindowExtensions = extensions;
         }
 
         public static IReadOnlyList<string> GetMissingOpenGLFunctionNames(this IWindow _) => MissingOpenGLFunctions;
@@ -40,6 +40,15 @@ namespace CoreLoader.OpenGL
                     field.SetValue(null, function);
                 }
             }
+        }
+
+        public static IReadOnlyList<string> GetPlatformExtensions(this IWindow window)
+        {
+            if (window.WindowExtensions is IOpenGLWindowExtensions openGLWindowExtensions)
+            {
+                return openGLWindowExtensions.GetPlatformExtensions();
+            }
+            return null;
         }
 
         internal static void LoadDefaultOpenGLFunctions() => LoadOpenGLFunctions<GlNative>(null);

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using CoreLoader.OpenGL.Attributes;
 using CoreLoader.Windows.Native;
 
 namespace CoreLoader.OpenGL.Windows
 {
-    internal sealed class Win32OpenGLWindowExtensions : IWindowExtensions
+    internal sealed class Win32OpenGLWindowExtensions : IOpenGLWindowExtensions
     {
         private readonly INativeWindow _window;
         private IntPtr _deviceContext;
@@ -67,7 +69,21 @@ namespace CoreLoader.OpenGL.Windows
 
                 OpenGl32.WglMakeCurrent(_deviceContext, _openGlContext);
                 OpenGl32.WglDeleteContext(tempContext);
+
+                WindowExtensions.LoadOpenGLFunctions<Win32OpenGLWindowExtensions>(null);
             }
         }
+
+        public IReadOnlyList<string> GetPlatformExtensions()
+        {
+            var extensions = WglGetExtensionsStringARB?.Invoke(_deviceContext);
+            return extensions?.Split(' ');
+        }
+
+        public delegate string WglGetExtensionsStringARBProc(IntPtr dc);
+#pragma warning disable CS0649 //field value is assigned using reflection
+        [OpenGLFunction("wglGetExtensionsStringARB")]
+        public static WglGetExtensionsStringARBProc WglGetExtensionsStringARB;
+#pragma warning restore CS0649
     }
 }

@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest</AnalysisLevel>
     <IsPackable>false</IsPackable>
     <Authors>cesmec</Authors>
     <Description>Used to generate OpenGL bindings based on the OpenGL-Refpages</Description>
