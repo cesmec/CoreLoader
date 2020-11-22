@@ -5,7 +5,7 @@ namespace CoreLoader.OpenGL.Windows
 {
     internal static class OpenGl32
     {
-        [DllImport(nameof(OpenGl32), ExactSpelling = true, EntryPoint = "wglGetProcAddress")]
+        [DllImport(nameof(OpenGl32), ExactSpelling = true, EntryPoint = "wglGetProcAddress", CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
         public static extern IntPtr WglGetProcAddress(string functionName);
         [DllImport(nameof(OpenGl32), ExactSpelling = true, EntryPoint = "wglCreateContext")]
         public static extern IntPtr WglCreateContext(IntPtr deviceContext);

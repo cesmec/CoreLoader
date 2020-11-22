@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace CoreLoader.Windows.Native
+namespace CoreLoader.OpenGL.Windows
 {
-    public static class Gdi32
+    internal static class Gdi32
     {
         public struct PixelFormatDescriptor
         {

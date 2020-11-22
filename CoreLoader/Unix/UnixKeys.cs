@@ -4,7 +4,7 @@ using CoreLoader.Unix.Native;
 
 namespace CoreLoader.Unix
 {
-    public sealed class UnixKeys : IKeys
+    internal sealed class UnixKeys : IKeys
     {
         private readonly IntPtr _display;
 

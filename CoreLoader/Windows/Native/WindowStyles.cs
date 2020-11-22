@@ -8,7 +8,7 @@ namespace CoreLoader.Windows.Native
     /// Code from https://www.pinvoke.net/default.aspx/Enums/WindowStyles.html
     /// </summary>
     [Flags]
-    public enum WindowStyles : uint
+    internal enum WindowStyles : uint
     {
         /// <summary>The window has a thin-line border.</summary>
         WS_BORDER = 0x800000,

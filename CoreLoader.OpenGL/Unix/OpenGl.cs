@@ -8,9 +8,9 @@ namespace CoreLoader.OpenGL.Unix
     {
         private const string LibName = "libGL";
 
-        [DllImport(LibName, ExactSpelling = true, EntryPoint = "glXGetProcAddress")]
+        [DllImport(LibName, ExactSpelling = true, EntryPoint = "glXGetProcAddress", CharSet = CharSet.Ansi, BestFitMapping = false)]
         public static extern IntPtr GlXGetProcAddress(string functionName);
-        [DllImport(LibName, ExactSpelling = true, EntryPoint = "glXGetProcAddressARB")]
+        [DllImport(LibName, ExactSpelling = true, EntryPoint = "glXGetProcAddressARB", CharSet = CharSet.Ansi, BestFitMapping = false)]
         public static extern IntPtr GlXGetProcAddressArb(string functionName);
         [DllImport(LibName, ExactSpelling = true, EntryPoint = "glXChooseVisual")]
         public static extern IntPtr GlXChooseVisual(IntPtr display, int screen, int[] attributes);
@@ -22,7 +22,7 @@ namespace CoreLoader.OpenGL.Unix
         public static extern void GlXDestroyContext(IntPtr display, IntPtr context);
         [DllImport(LibName, ExactSpelling = true, EntryPoint = "glXSwapBuffers")]
         public static extern void GlXSwapBuffers(IntPtr displayPtr, uint window);
-        [DllImport(LibName, ExactSpelling = true, EntryPoint = "glXQueryExtensionsString")]
+        [DllImport(LibName, ExactSpelling = true, EntryPoint = "glXQueryExtensionsString", CharSet = CharSet.Ansi, BestFitMapping = false)]
         public static extern string GlXQueryExtensionsString(IntPtr displayPtr, int screen);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using CoreLoader.OpenGL.Attributes;
-using CoreLoader.Windows.Native;
 
 namespace CoreLoader.OpenGL.Windows
 {
@@ -56,7 +56,8 @@ namespace CoreLoader.OpenGL.Windows
                 _deviceContext = User32.GetDC(_window.NativeHandle);
 
                 var pixelFormat = Gdi32.ChoosePixelFormat(_deviceContext, ref pfd);
-                Gdi32.SetPixelFormat(_deviceContext, pixelFormat, ref pfd);
+                var result = Gdi32.SetPixelFormat(_deviceContext, pixelFormat, ref pfd);
+                Marshal.ThrowExceptionForHR(result);
 
                 var tempContext = OpenGl32.WglCreateContext(_deviceContext);
                 OpenGl32.WglMakeCurrent(_deviceContext, tempContext);

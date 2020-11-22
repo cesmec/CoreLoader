@@ -75,16 +75,13 @@ namespace CoreLoader.Windows
         public KeyState GetKeyState(uint key)
         {
             var state = User32.GetAsyncKeyState((int)key);
-            switch (state)
+            return state switch
             {
-                case -32767: //todo check values
-                case -32768:
-                    return KeyState.Pressed;
-                case 0:
-                    return KeyState.Released;
-                default:
-                    return KeyState.Unknown;
-            }
+                //todo check values
+                -32767 or -32768 => KeyState.Pressed,
+                0 => KeyState.Released,
+                _ => KeyState.Unknown
+            };
         }
 
         public bool GetCursorPosition(out Point position)
@@ -114,7 +111,7 @@ namespace CoreLoader.Windows
         public void SetCursorVisible(bool visible)
         {
             if (_cursorVisible != visible)
-                User32.ShowCursor(visible);
+                _ = User32.ShowCursor(visible);
             _cursorVisible = visible;
         }
 

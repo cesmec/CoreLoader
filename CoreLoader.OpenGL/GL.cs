@@ -163,73 +163,123 @@ namespace CoreLoader.OpenGL
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ProgramUniformMatrix4fv(uint program, int location, int count, bool transpose, in Matrix4x4 value)
+        public static void ProgramUniformMatrix4fv(uint program, int location, bool transpose, in Matrix4x4 value)
         {
             fixed (float* first = &value.M11)
-            {
-                GlNative.ProgramUniformMatrix4fv(program, location, count, transpose, first);
-            }
+                GlNative.ProgramUniformMatrix4fv(program, location, 1, transpose, first);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void UniformMatrix4fv(int location, int count, bool transpose, in Matrix4x4 value)
+        public static void ProgramUniformMatrix4fv(uint program, int location, int count, bool transpose, Matrix4x4[] value)
+        {
+            fixed (Matrix4x4* first = value)
+                GlNative.ProgramUniformMatrix4fv(program, location, count, transpose, &first->M11);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void UniformMatrix4fv(int location, bool transpose, in Matrix4x4 value)
         {
             fixed (float* first = &value.M11)
-                GlNative.UniformMatrix4fv(location, count, transpose, first);
+                GlNative.UniformMatrix4fv(location, 1, transpose, first);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ProgramUniform1fv(uint program, int location, int count, float value)
+        public static void UniformMatrix4fv(int location, int count, bool transpose, Matrix4x4[] value)
         {
-            GlNative.ProgramUniform1fv(program, location, count, &value);
+            fixed (Matrix4x4* first = value)
+                GlNative.UniformMatrix4fv(location, count, transpose, &first->M11);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ProgramUniform2fv(uint program, int location, int count, in Vector2 value)
+        public static void ProgramUniform1fv(uint program, int location, int count, float[] value)
         {
-            fixed (float* first = &value.X)
-                GlNative.ProgramUniform2fv(program, location, count, first);
+            fixed (float* first = value)
+                GlNative.ProgramUniform1fv(program, location, count, first);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ProgramUniform3fv(uint program, int location, int count, in Vector3 value)
+        public static void ProgramUniform2f(uint program, int location, in Vector2 value)
         {
-            fixed (float* first = &value.X)
-                GlNative.ProgramUniform3fv(program, location, count, first);
+            GlNative.ProgramUniform2f(program, location, value.X, value.Y);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void ProgramUniform4fv(uint program, int location, int count, in Vector4 value)
+        public static void ProgramUniform2f(uint program, int location, float v0, float v1)
         {
-            fixed (float* first = &value.X)
-                GlNative.ProgramUniform4fv(program, location, count, first);
+            GlNative.ProgramUniform2f(program, location, v0, v1);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Uniform1fv(int location, int count, float value)
+        public static void ProgramUniform2fv(uint program, int location, int count, Vector2[] value)
         {
-            GlNative.Uniform1fv(location, count, &value);
+            fixed (Vector2* first = value)
+                GlNative.ProgramUniform2fv(program, location, count, &first->X);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Uniform2fv(int location, int count, in Vector2 value)
+        public static void ProgramUniform3f(uint program, int location, in Vector3 value)
         {
-            fixed (float* first = &value.X)
-                GlNative.Uniform2fv(location, count, first);
+            GlNative.ProgramUniform3f(program, location, value.X, value.Y, value.Z);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Uniform3fv(int location, int count, in Vector3 value)
+        public static void ProgramUniform3f(uint program, int location, float v0, float v1, float v2)
         {
-            fixed (float* first = &value.X)
-                GlNative.Uniform3fv(location, count, first);
+            GlNative.ProgramUniform3f(program, location, v0, v1, v2);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Uniform4fv(int location, int count, in Vector4 value)
+        public static void ProgramUniform3fv(uint program, int location, int count, Vector3[] value)
         {
-            fixed (float* first = &value.X)
-                GlNative.Uniform4fv(location, count, first);
+            fixed (Vector3* first = value)
+                GlNative.ProgramUniform3fv(program, location, count, &first->X);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ProgramUniform4f(uint program, int location, in Vector4 value)
+        {
+            GlNative.ProgramUniform4f(program, location, value.X, value.Y, value.Z, value.W);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ProgramUniform4f(uint program, int location, float v0, float v1, float v2, float v3)
+        {
+            GlNative.ProgramUniform4f(program, location, v0, v1, v2, v3);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ProgramUniform4fv(uint program, int location, int count, Vector4[] value)
+        {
+            fixed (Vector4* first = value)
+                GlNative.ProgramUniform4fv(program, location, count, &first->X);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Uniform1fv(int location, int count, float[] value)
+        {
+            fixed (float* first = value)
+                GlNative.Uniform1fv(location, count, first);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Uniform2fv(int location, int count, Vector2[] value)
+        {
+            fixed (Vector2* first = value)
+                GlNative.Uniform2fv(location, count, &first->X);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Uniform3fv(int location, int count, Vector3[] value)
+        {
+            fixed (Vector3* first = value)
+                GlNative.Uniform3fv(location, count, &first->X);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Uniform4fv(int location, int count, Vector4[] value)
+        {
+            fixed (Vector4* first = value)
+                GlNative.Uniform4fv(location, count, &first->X);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

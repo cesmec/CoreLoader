@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace CoreLoader.Unix.Native
 {
-    public class X11
+    public static class X11
     {
         public delegate ulong AllocatorFunc(ref XDisplay display);
         public delegate int Private15Func(ref XDisplay display);
@@ -132,57 +132,57 @@ namespace CoreLoader.Unix.Native
 
         private const string LibName = "libX11";
 
+        [DllImport(LibName, ExactSpelling = true, CharSet = CharSet.Ansi, BestFitMapping = false)]
+        internal static extern IntPtr XOpenDisplay(string displayName);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern IntPtr XOpenDisplay([MarshalAs(UnmanagedType.LPStr)] string displayName);
+        internal static extern ulong XCreateColormap(IntPtr display, ulong root, ref Visual visual, int alloc);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern ulong XCreateColormap(IntPtr display, ulong root, ref Visual visual, int alloc);
+        internal static extern uint XCreateWindow(IntPtr display, ulong parent, int x, int y, uint width, uint height, uint borderWidth, int depth, uint @class, ref Visual visual, ulong valueMask, ref XSetWindowAttributes attributes);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern uint XCreateWindow(IntPtr display, ulong parent, int x, int y, uint width, uint height, uint borderWidth, int depth, uint @class, ref Visual visual, ulong valueMask, ref XSetWindowAttributes attributes);
+        internal static extern int XMapWindow(IntPtr display, ulong window);
+        [DllImport(LibName, ExactSpelling = true, CharSet = CharSet.Ansi, BestFitMapping = false)]
+        internal static extern int XStoreName(IntPtr display, ulong window, string title);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern int XMapWindow(IntPtr display, ulong window);
+        internal static extern int XDestroyWindow(IntPtr display, ulong window);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern int XStoreName(IntPtr display, ulong window, string title);
+        internal static extern int XCloseDisplay(IntPtr display);
+        [DllImport(LibName, ExactSpelling = true, CharSet = CharSet.Ansi, BestFitMapping = false)]
+        internal static extern ulong XInternAtom(IntPtr display, string atomName, bool onlyIfExists);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern int XDestroyWindow(IntPtr display, ulong window);
-        [DllImport(LibName, ExactSpelling = true)]
-        public static extern int XCloseDisplay(IntPtr display);
-        [DllImport(LibName, ExactSpelling = true)]
-        public static extern ulong XInternAtom(IntPtr display, string atomName, bool onlyIfExists);
-        [DllImport(LibName, ExactSpelling = true)]
-        public static extern int XSetWMProtocols(IntPtr display, ulong window, ulong[] protocols, int count);
+        internal static extern int XSetWMProtocols(IntPtr display, ulong window, ulong[] protocols, int count);
 
         //keys
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern uint XkbKeycodeToKeysym(IntPtr display, uint keycode, int group, int level);
+        internal static extern uint XkbKeycodeToKeysym(IntPtr display, uint keycode, int group, int level);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern void XQueryKeymap(IntPtr display, byte[] keys_return);
+        internal static extern void XQueryKeymap(IntPtr display, byte[] keys_return);
+        [DllImport(LibName, ExactSpelling = true, CharSet = CharSet.Ansi, BestFitMapping = false)]
+        internal static extern string XKeysymToString(uint keysym);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern string XKeysymToString(uint keysym);
-        [DllImport(LibName, ExactSpelling = true)]
-        public static extern uint XKeysymToKeycode(IntPtr display, uint keysym);
+        internal static extern uint XKeysymToKeycode(IntPtr display, uint keysym);
 
         //pointer
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern bool XQueryPointer(IntPtr display, ulong w, out ulong root_return, out ulong child_return, out int root_x_return, out int root_y_return, out int win_x_return, out int win_y_return, out uint mask_return);
+        internal static extern bool XQueryPointer(IntPtr display, ulong w, out ulong root_return, out ulong child_return, out int root_x_return, out int root_y_return, out int win_x_return, out int win_y_return, out uint mask_return);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern void XWarpPointer(IntPtr display, ulong src_w, ulong dest_w, int src_x, int src_y, uint src_width, uint src_height, int dest_x, int dest_y);
+        internal static extern void XWarpPointer(IntPtr display, ulong src_w, ulong dest_w, int src_x, int src_y, uint src_width, uint src_height, int dest_x, int dest_y);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern uint XCreateBitmapFromData(IntPtr display, ulong window, byte[] data, uint width, uint height);
+        internal static extern uint XCreateBitmapFromData(IntPtr display, ulong window, byte[] data, uint width, uint height);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern uint XCreatePixmapCursor(IntPtr display, uint bitmap, uint bitmap_mask, ref XColor foreground, ref XColor background, uint x, uint y);
+        internal static extern uint XCreatePixmapCursor(IntPtr display, uint bitmap, uint bitmap_mask, ref XColor foreground, ref XColor background, uint x, uint y);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern void XDefineCursor(IntPtr display, uint window, uint cursor);
+        internal static extern void XDefineCursor(IntPtr display, uint window, uint cursor);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern void XFreeCursor(IntPtr display, uint cursor);
+        internal static extern void XFreeCursor(IntPtr display, uint cursor);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern void XFreePixmap(IntPtr display, uint pixmap);
+        internal static extern void XFreePixmap(IntPtr display, uint pixmap);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern void XUndefineCursor(IntPtr display, ulong window);
+        internal static extern void XUndefineCursor(IntPtr display, ulong window);
 
         //event handling
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern bool XPending(IntPtr display);
+        internal static extern bool XPending(IntPtr display);
         [DllImport(LibName, ExactSpelling = true)]
-        public static extern int XNextEvent(IntPtr display, IntPtr @event);
+        internal static extern int XNextEvent(IntPtr display, IntPtr @event);
     }
 }

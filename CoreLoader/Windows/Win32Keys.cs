@@ -4,7 +4,7 @@ using CoreLoader.Windows.Native;
 
 namespace CoreLoader.Windows
 {
-    public sealed class Win32Keys : IKeys
+    internal sealed class Win32Keys : IKeys
     {
         public string GetKeyName(uint key)
         {
