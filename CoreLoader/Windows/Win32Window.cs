@@ -78,7 +78,8 @@ namespace CoreLoader.Windows
             return state switch
             {
                 //todo check values
-                -32767 or -32768 => KeyState.Pressed,
+                -32767 => KeyState.Pressed,
+                -32768 => KeyState.Pressed,
                 0 => KeyState.Released,
                 _ => KeyState.Unknown
             };
