@@ -89,7 +89,7 @@ namespace CoreLoader.Windows
         {
             if (!User32.GetCursorPos(out var cursorPos) || !User32.GetWindowInfo(NativeHandle, out var windowInfo))
             {
-                position = new Point();
+                position = default;
                 return false;
             }
 
