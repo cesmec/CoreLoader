@@ -181,8 +181,6 @@ namespace CoreLoader.Unix.Native
 
         //event handling
         [DllImport(LibName, ExactSpelling = true)]
-        internal static extern bool XPending(IntPtr display);
-        [DllImport(LibName, ExactSpelling = true)]
-        internal static extern int XNextEvent(IntPtr display, IntPtr @event);
+        internal static extern bool XCheckWindowEvent(IntPtr display, ulong window, long event_mask, IntPtr @event);
     }
 }

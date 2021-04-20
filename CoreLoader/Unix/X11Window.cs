@@ -8,6 +8,15 @@ namespace CoreLoader.Unix
 {
     internal sealed class X11Window : INativeWindow
     {
+        private const long EventMask = 
+            1L << 0 /*KeyPressMask*/ |
+            1L << 1 /*KeyReleaseMask*/ |
+            1L << 2 /*ButtonPressMask*/ |
+            1L << 3 /*ButtonReleaseMask*/ |
+            1L << 6 /*PointerMotionMask*/ |
+            1L << 15 /*ExposureMask*/ |
+            1L << 21 /*FocusChangeMask*/;
+
         private readonly string _title;
         private readonly byte[] _keys = new byte[32];
         private IX11WindowExtensions _x11Extensions;
@@ -56,16 +65,9 @@ namespace CoreLoader.Unix
             var windowAttributes = new X11.XSetWindowAttributes
             {
                 colormap = cmap,
-                event_mask =
-                    1L << 0 /*KeyPressMask*/ |
-                    1L << 1 /*KeyReleaseMask*/ |
-                    1L << 2 /*ButtonPressMask*/ |
-                    1L << 3 /*ButtonReleaseMask*/ |
-                    1L << 6 /*PointerMotionMask*/ |
-                    1L << 15 /*ExposureMask*/ |
-                    1L << 21 /*FocusChangeMask*/
+                event_mask = EventMask
             };
-            WindowId = X11.XCreateWindow(NativeHandle, screen.root, 0, 0, (uint)Width, (uint)Height, 0, visualInfo.depth, 0, ref visual, 1L << 13/*CWColormap*/ | 1L << 11/*CWEventMask*/, ref windowAttributes);
+            WindowId = X11.XCreateWindow(NativeHandle, screen.root, 0, 0, (uint)Width, (uint)Height, 0, visualInfo.depth, 1, ref visual, 1L << 13/*CWColormap*/ | 1L << 11/*CWEventMask*/, ref windowAttributes);
 
             X11.XMapWindow(NativeHandle, WindowId);
             X11.XStoreName(NativeHandle, WindowId, _title);
@@ -146,9 +148,8 @@ namespace CoreLoader.Unix
             const int scrollUpButton = 4;
             const int scrollDownButton = 5;
 
-            while (X11.XPending(NativeHandle))
+            while (X11.XCheckWindowEvent(NativeHandle, WindowId, EventMask, EventPtr))
             {
-                X11.XNextEvent(NativeHandle, EventPtr);
                 var ev = Marshal.PtrToStructure<XEvent>(EventPtr);
                 switch (ev.type)
                 {

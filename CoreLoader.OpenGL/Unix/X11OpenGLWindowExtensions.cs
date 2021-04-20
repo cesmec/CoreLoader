@@ -20,7 +20,12 @@ namespace CoreLoader.OpenGL.Unix
 
         public X11.XVisualInfo GetVisualInfo(X11.XDisplay display)
         {
-            var attributes = new[] { 4 /*GLX_RGBA*/, 12 /*GLX_DEPTH_SIZE*/, 24, 5 /*GLX_DOUBLEBUFFER*/ };
+            var attributes = new[] {
+                4 /*GLX_RGBA*/, 1,
+                5 /*GLX_DOUBLEBUFFER*/, 1,
+                12 /*GLX_DEPTH_SIZE*/, 24,
+                0
+            };
             var visualInfoPtr = OpenGl.GlXChooseVisual(_window.NativeHandle, display.default_screen, attributes);
             _visualInfo = Marshal.PtrToStructure<X11.XVisualInfo>(visualInfoPtr);
             _display = display;
