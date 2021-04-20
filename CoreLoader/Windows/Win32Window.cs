@@ -72,17 +72,10 @@ namespace CoreLoader.Windows
             _loadedEvent.Dispose();
         }
 
-        public KeyState GetKeyState(uint key)
+        public bool IsKeyPressed(uint key)
         {
             var state = User32.GetAsyncKeyState((int)key);
-            return state switch
-            {
-                //todo check values
-                -32767 => KeyState.Pressed,
-                -32768 => KeyState.Pressed,
-                0 => KeyState.Released,
-                _ => KeyState.Unknown
-            };
+            return ((state >> 15) & 0x01) != 0;
         }
 
         public bool GetCursorPosition(out Point position)
@@ -142,16 +135,29 @@ namespace CoreLoader.Windows
             CloseRequested = true;
         }
 
+        private static short LowWord(long value)
+        {
+            return (short)(value & 0xFFFF);
+        }
+
+        private static short HighWord(long value)
+        {
+            return (short)((value >> 16) & 0xFFFF);
+        }
+
         private long WndProc(IntPtr hWnd, uint message, uint wParam, long lParam)
         {
+            var loWord = LowWord(lParam);
+            var hiWord = HighWord(lParam);
+
             switch (message)
             {
                 case 0x0001: //Create
                     _loadedEvent.Set();
                     break;
                 case 0x0005: //Size
-                    Width = (int)(lParam & 0xffff);
-                    Height = (int)(lParam >> 16 & 0xffff);
+                    Width = loWord;
+                    Height = hiWord;
                     OnResize?.Invoke(this, new ResizeEventArgs(Width, Height));
                     break;
                 case 0x0007: //SetFocus
@@ -164,7 +170,7 @@ namespace CoreLoader.Windows
                     CloseRequested = true;
                     break;
                 case 0x0200: //MouseMove
-                    OnMouseMove?.Invoke(this, new MouseMoveEventArgs((int)(lParam & 0xffff), (int)(lParam >> 16 & 0xffff)));
+                    OnMouseMove?.Invoke(this, new MouseMoveEventArgs(loWord, hiWord));
                     break;
                 case 0x0100: //KeyDown
                     OnKeyDown?.Invoke(this, new KeyEventArgs(wParam));
@@ -173,34 +179,41 @@ namespace CoreLoader.Windows
                     OnKeyUp?.Invoke(this, new KeyEventArgs(wParam));
                     break;
                 case 0x0201: //LButtonDown
-                    OnClick?.Invoke(this, ClickEventArgs.Down(ClickEventArgs.Left));
+                    OnClick?.Invoke(this, ClickEventArgs.Down(new Point(loWord, hiWord), ClickEventArgs.MouseButton.Left));
                     break;
                 case 0x0202: //LButtonUp
-                    OnClick?.Invoke(this, ClickEventArgs.Up(ClickEventArgs.Left));
+                    OnClick?.Invoke(this, ClickEventArgs.Up(new Point(loWord, hiWord), ClickEventArgs.MouseButton.Left));
                     break;
                 case 0x0204: //RButtonDown
-                    OnClick?.Invoke(this, ClickEventArgs.Down(ClickEventArgs.Right));
+                    OnClick?.Invoke(this, ClickEventArgs.Down(new Point(loWord, hiWord), ClickEventArgs.MouseButton.Right));
                     break;
                 case 0x0205: //RButtonUp
-                    OnClick?.Invoke(this, ClickEventArgs.Up(ClickEventArgs.Right));
+                    OnClick?.Invoke(this, ClickEventArgs.Up(new Point(loWord, hiWord), ClickEventArgs.MouseButton.Right));
                     break;
                 case 0x0207: //MButtonDown
-                    OnClick?.Invoke(this, ClickEventArgs.Down(ClickEventArgs.Middle));
+                    OnClick?.Invoke(this, ClickEventArgs.Down(new Point(loWord, hiWord), ClickEventArgs.MouseButton.Middle));
                     break;
                 case 0x0208: //MButtonUp
-                    OnClick?.Invoke(this, ClickEventArgs.Up(ClickEventArgs.Middle));
+                    OnClick?.Invoke(this, ClickEventArgs.Up(new Point(loWord, hiWord), ClickEventArgs.MouseButton.Middle));
                     break;
                 case 0x020B: //XButtonDown
-                    OnClick?.Invoke(this, ClickEventArgs.Down(wParam));
+                    OnClick?.Invoke(this, ClickEventArgs.Down(new Point(loWord, hiWord), ClickEventArgs.MouseButton.Middle + (uint)HighWord(wParam)));
                     break;
                 case 0x020C: //XButtonUp
-                    OnClick?.Invoke(this, ClickEventArgs.Up(wParam));
+                    OnClick?.Invoke(this, ClickEventArgs.Up(new Point(loWord, hiWord), ClickEventArgs.MouseButton.Middle + (uint)HighWord(wParam)));
                     break;
                 case 0x020A: //MouseWheel Up / Down
-                    OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.UpDown, (int)wParam));
-                    break;
                 case 0x020E: //MouseWheel Left / Right
-                    OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.LeftRight, (int)wParam));
+                    if (OnScroll != null)
+                    {
+                        var direction = message == 0x020A
+                            ? ScrollDirection.UpDown
+                            : ScrollDirection.LeftRight;
+                        var delta = HighWord(wParam);
+
+                        var mousePosition = new Point(loWord, hiWord);
+                        OnScroll(this, new ScrollEventArgs(direction, mousePosition, delta));
+                    }
                     break;
             }
 

@@ -19,7 +19,7 @@ namespace CoreLoader
         event EventHandler<ResizeEventArgs> OnResize;
         event EventHandler<FocusChangeEventArgs> OnFocusChange;
 
-        KeyState GetKeyState(uint key);
+        bool IsKeyPressed(uint key);
         bool GetCursorPosition(out Point position);
         void SetCursorPosition(in Point position);
         void SetCursorVisible(bool visible);

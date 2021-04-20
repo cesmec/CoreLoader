@@ -79,11 +79,10 @@ namespace CoreLoader.Unix
             X11.XSetWMProtocols(NativeHandle, WindowId, events, events.Length);
         }
 
-        public KeyState GetKeyState(uint key)
+        public bool IsKeyPressed(uint key)
         {
             var pressed = _keys[(int)key / 8] & (1 << ((int)key % 8));
-
-            return pressed == 0 ? KeyState.Released : KeyState.Pressed;
+            return pressed != 0;
         }
 
         public bool GetCursorPosition(out Point position)
@@ -147,6 +146,9 @@ namespace CoreLoader.Unix
         {
             const int scrollUpButton = 4;
             const int scrollDownButton = 5;
+            const int scrollLeftButton = 6;
+            const int scrollRightButton = 7;
+            const int defaultWheelDelta = 120;
 
             while (X11.XCheckWindowEvent(NativeHandle, WindowId, EventMask, EventPtr))
             {
@@ -163,22 +165,32 @@ namespace CoreLoader.Unix
                         break;
                     case 4: //ButtonPress
                         var buttonPressEvent = Marshal.PtrToStructure<XButtonEvent>(EventPtr);
+                        var mousePressPosition = new Point(buttonPressEvent.x, buttonPressEvent.y);
                         switch (buttonPressEvent.button)
                         {
                             case scrollUpButton:
-                                OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.UpDown, 1));
+                                OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.UpDown, mousePressPosition, defaultWheelDelta));
                                 break;
                             case scrollDownButton:
-                                OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.UpDown, -1));
+                                OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.UpDown, mousePressPosition, -defaultWheelDelta));
+                                break;
+                            case scrollLeftButton:
+                                OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.LeftRight, mousePressPosition, defaultWheelDelta));
+                                break;
+                            case scrollRightButton:
+                                OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.LeftRight, mousePressPosition, -defaultWheelDelta));
                                 break;
                             default:
-                                OnClick?.Invoke(this, new ClickEventArgs(ClickEventState.Down, buttonPressEvent.button));
+                                OnClick?.Invoke(this, ClickEventArgs.Down(mousePressPosition, (ClickEventArgs.MouseButton)buttonPressEvent.button));
                                 break;
                         }
                         break;
                     case 5: //ButtonRelease
                         var buttonReleaseEvent = Marshal.PtrToStructure<XButtonEvent>(EventPtr);
-                        OnClick?.Invoke(this, new ClickEventArgs(ClickEventState.Up, buttonReleaseEvent.button));
+                        if (buttonReleaseEvent.button < scrollUpButton || buttonReleaseEvent.button > scrollRightButton)
+                        {
+                            OnClick?.Invoke(this, ClickEventArgs.Up(new Point(buttonReleaseEvent.x, buttonReleaseEvent.y), (ClickEventArgs.MouseButton)buttonReleaseEvent.button));
+                        }
                         break;
                     case 6: //MotionNotify
                         var motionEvent = Marshal.PtrToStructure<XMotionEvent>(EventPtr);

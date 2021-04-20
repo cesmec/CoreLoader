@@ -70,7 +70,7 @@ namespace CoreLoader
         }
 
         public bool GetCursorPosition(out Point position) => _nativeWindow.GetCursorPosition(out position);
-        public KeyState GetKeyState(uint key) => _nativeWindow.GetKeyState(key);
+        public bool IsKeyPressed(uint key) => _nativeWindow.IsKeyPressed(key);
         public void PollEvents() => _nativeWindow.PollEvents();
         public void SetCloseRequested() => _nativeWindow.SetCloseRequested();
         public void SetCursorPosition(in Point position) => _nativeWindow.SetCursorPosition(position);
