@@ -144,78 +144,14 @@ namespace CoreLoader.Unix
 
         public void PollEvents()
         {
-            const int scrollUpButton = 4;
-            const int scrollDownButton = 5;
-            const int scrollLeftButton = 6;
-            const int scrollRightButton = 7;
-            const int defaultWheelDelta = 120;
-
             while (X11.XCheckWindowEvent(NativeHandle, WindowId, EventMask, EventPtr))
             {
-                var ev = Marshal.PtrToStructure<XEvent>(EventPtr);
-                switch (ev.type)
-                {
-                    case 1: //KeyPress
-                        var keyPressEvent = Marshal.PtrToStructure<XKeyEvent>(EventPtr);
-                        OnKeyDown?.Invoke(this, new KeyEventArgs(keyPressEvent.keycode));
-                        break;
-                    case 2: //KeyRelease
-                        var keyReleaseEvent = Marshal.PtrToStructure<XKeyEvent>(EventPtr);
-                        OnKeyUp?.Invoke(this, new KeyEventArgs(keyReleaseEvent.keycode));
-                        break;
-                    case 4: //ButtonPress
-                        var buttonPressEvent = Marshal.PtrToStructure<XButtonEvent>(EventPtr);
-                        var mousePressPosition = new Point(buttonPressEvent.x, buttonPressEvent.y);
-                        switch (buttonPressEvent.button)
-                        {
-                            case scrollUpButton:
-                                OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.UpDown, mousePressPosition, defaultWheelDelta));
-                                break;
-                            case scrollDownButton:
-                                OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.UpDown, mousePressPosition, -defaultWheelDelta));
-                                break;
-                            case scrollLeftButton:
-                                OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.LeftRight, mousePressPosition, defaultWheelDelta));
-                                break;
-                            case scrollRightButton:
-                                OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.LeftRight, mousePressPosition, -defaultWheelDelta));
-                                break;
-                            default:
-                                OnClick?.Invoke(this, ClickEventArgs.Down(mousePressPosition, (ClickEventArgs.MouseButton)buttonPressEvent.button));
-                                break;
-                        }
-                        break;
-                    case 5: //ButtonRelease
-                        var buttonReleaseEvent = Marshal.PtrToStructure<XButtonEvent>(EventPtr);
-                        if (buttonReleaseEvent.button < scrollUpButton || buttonReleaseEvent.button > scrollRightButton)
-                        {
-                            OnClick?.Invoke(this, ClickEventArgs.Up(new Point(buttonReleaseEvent.x, buttonReleaseEvent.y), (ClickEventArgs.MouseButton)buttonReleaseEvent.button));
-                        }
-                        break;
-                    case 6: //MotionNotify
-                        var motionEvent = Marshal.PtrToStructure<XMotionEvent>(EventPtr);
-                        OnMouseMove?.Invoke(this, new MouseMoveEventArgs(motionEvent.x, motionEvent.y));
-                        break;
-                    case 9: //FocusIn
-                        OnFocusChange?.Invoke(this, new FocusChangeEventArgs(true));
-                        break;
-                    case 10: //FocusOut
-                        OnFocusChange?.Invoke(this, new FocusChangeEventArgs(false));
-                        break;
-                    case 12: //Expose
-                        var exposeEvent = Marshal.PtrToStructure<XExposeEvent>(EventPtr);
-                        Width = exposeEvent.width;
-                        Height = exposeEvent.height;
-                        OnResize?.Invoke(this, new ResizeEventArgs(exposeEvent.width, exposeEvent.height));
-                        break;
-                    case 33: //ClientMessage
-                        var clientMessage = Marshal.PtrToStructure<XClientMessageEvent>(EventPtr);
-                        if (clientMessage.data.l[0] == (long)_wmDelete)
-                        {
-                            CloseRequested = true;
-                        }
-                        break;
-                }
+                HandleCurrentEvent();
+            }
+            
+            while (X11.XPending(NativeHandle)) {
+                X11.XNextEvent(NativeHandle, EventPtr);
+                HandleCurrentEvent();
             }
 
             X11.XQueryKeymap(NativeHandle, _keys);
@@ -225,6 +161,85 @@ namespace CoreLoader.Unix
         {
             if (extensions is IX11WindowExtensions x11Extensions)
                 _x11Extensions = x11Extensions;
+        }
+
+        private void HandleCurrentEvent()
+        {
+            const int scrollUpButton = 4;
+            const int scrollDownButton = 5;
+            const int scrollLeftButton = 6;
+            const int scrollRightButton = 7;
+            const int defaultWheelDelta = 120;
+
+            var ev = Marshal.PtrToStructure<XEvent>(EventPtr);
+            switch (ev.type)
+            {
+                case 1: //KeyPress
+                    var keyPressEvent = Marshal.PtrToStructure<XKeyEvent>(EventPtr);
+                    OnKeyDown?.Invoke(this, new KeyEventArgs(keyPressEvent.keycode));
+                    break;
+                case 2: //KeyRelease
+                    var keyReleaseEvent = Marshal.PtrToStructure<XKeyEvent>(EventPtr);
+                    OnKeyUp?.Invoke(this, new KeyEventArgs(keyReleaseEvent.keycode));
+                    break;
+                case 4: //ButtonPress
+                    var buttonPressEvent = Marshal.PtrToStructure<XButtonEvent>(EventPtr);
+                    var mousePressPosition = new Point(buttonPressEvent.x, buttonPressEvent.y);
+                    switch (buttonPressEvent.button)
+                    {
+                        case scrollUpButton:
+                            OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.UpDown, mousePressPosition, defaultWheelDelta));
+                            break;
+                        case scrollDownButton:
+                            OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.UpDown, mousePressPosition, -defaultWheelDelta));
+                            break;
+                        case scrollLeftButton:
+                            OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.LeftRight, mousePressPosition, defaultWheelDelta));
+                            break;
+                        case scrollRightButton:
+                            OnScroll?.Invoke(this, new ScrollEventArgs(ScrollDirection.LeftRight, mousePressPosition, -defaultWheelDelta));
+                            break;
+                        default:
+                            OnClick?.Invoke(this, ClickEventArgs.Down(mousePressPosition, (ClickEventArgs.MouseButton)buttonPressEvent.button));
+                            break;
+                    }
+                    break;
+                case 5: //ButtonRelease
+                    var buttonReleaseEvent = Marshal.PtrToStructure<XButtonEvent>(EventPtr);
+                    if (buttonReleaseEvent.button < scrollUpButton || buttonReleaseEvent.button > scrollRightButton)
+                    {
+                        OnClick?.Invoke(this, ClickEventArgs.Up(new Point(buttonReleaseEvent.x, buttonReleaseEvent.y), (ClickEventArgs.MouseButton)buttonReleaseEvent.button));
+                    }
+                    break;
+                case 6: //MotionNotify
+                    var motionEvent = Marshal.PtrToStructure<XMotionEvent>(EventPtr);
+                    OnMouseMove?.Invoke(this, new MouseMoveEventArgs(motionEvent.x, motionEvent.y));
+                    break;
+                case 9: //FocusIn
+                    OnFocusChange?.Invoke(this, new FocusChangeEventArgs(true));
+                    break;
+                case 10: //FocusOut
+                    OnFocusChange?.Invoke(this, new FocusChangeEventArgs(false));
+                    break;
+                case 12: //Expose
+                    var exposeEvent = Marshal.PtrToStructure<XExposeEvent>(EventPtr);
+                    if (X11.XGetGeometry(NativeHandle, WindowId, out _, out _, out _, out var width, out var height, out _, out _) != 0) {
+                        Width = (int)width;
+                        Height = (int)height;
+                    } else {
+                        Width = exposeEvent.width;
+                        Height = exposeEvent.height;
+                    }
+                    OnResize?.Invoke(this, new ResizeEventArgs(Width, Height));
+                    break;
+                case 33: //ClientMessage
+                    var clientMessage = Marshal.PtrToStructure<XClientMessageEvent>(EventPtr);
+                    if (clientMessage.data.l[0] == (long)_wmDelete)
+                    {
+                        CloseRequested = true;
+                    }
+                    break;
+            }
         }
     }
 }

@@ -150,6 +150,8 @@ namespace CoreLoader.Unix.Native
         internal static extern ulong XInternAtom(IntPtr display, string atomName, bool onlyIfExists);
         [DllImport(LibName, ExactSpelling = true)]
         internal static extern int XSetWMProtocols(IntPtr display, ulong window, ulong[] protocols, int count);
+        [DllImport(LibName, ExactSpelling = true)]
+        internal static extern int XGetGeometry(IntPtr display, ulong drawable, out ulong root, out int x, out int y, out uint width, out uint height, out uint borderWidth, out uint depth);
 
         //keys
         [DllImport(LibName, ExactSpelling = true)]
@@ -182,5 +184,9 @@ namespace CoreLoader.Unix.Native
         //event handling
         [DllImport(LibName, ExactSpelling = true)]
         internal static extern bool XCheckWindowEvent(IntPtr display, ulong window, long event_mask, IntPtr @event);
+        [DllImport(LibName, ExactSpelling = true)]
+        internal static extern bool XPending(IntPtr display);
+        [DllImport(LibName, ExactSpelling = true)]
+        internal static extern int XNextEvent(IntPtr display, IntPtr @event);
     }
 }
